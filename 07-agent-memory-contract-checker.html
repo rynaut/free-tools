@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Memory Contract Checker — Rynaut</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#EFF2F4;--paper:#FAFCFD;--ink:#16222B;--ink2:#36454F;--mut:#647480;--faint:#94A2AC;
+  --line:#DCE3E7;--line2:#CAD3D9;
+  --teal:#0E6C8C;--teal-d:#0A4F66;--teal-bg:#DEEEF3;
+  --amber:#C2790F;--amber-bg:#FBEFD7;--red:#C2453E;--red-bg:#FBE6E3;
+  --green:#2E8B5F;--green-bg:#E4F2EA;--code:#0B2530;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 12% 0%,rgba(14,108,140,0.05),transparent 45%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 22px 90px;}
+header{padding:44px 0 24px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--teal);font-weight:700;margin-bottom:22px;}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);}
+.tg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:4px 11px;border-radius:20px;font-weight:700;background:var(--teal-bg);color:var(--teal-d);margin-bottom:16px;}
+h1{font-family:'Fraunces',serif;font-size:clamp(30px,5.5vw,46px);font-weight:600;letter-spacing:-0.5px;line-height:1.05;margin-bottom:14px;}
+.sub{font-size:15.5px;color:var(--ink2);max-width:620px;}
+.srcbar{margin-top:20px;padding:14px 18px;background:var(--paper);border:1px solid var(--line);border-radius:12px;font-size:12px;color:var(--mut);}
+.srcbar b{color:var(--teal-d);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;}
+.intro{font-size:15px;color:var(--ink2);margin:28px 0 22px;}
+.intro b{color:var(--ink);}
+.tabs{display:flex;gap:8px;margin-bottom:22px;}
+.tabs button{flex:1;padding:13px;background:var(--paper);border:1.5px solid var(--line2);border-radius:11px;color:var(--ink2);font-family:'Inter',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .15s;}
+.tabs button.on{border-color:var(--teal);background:var(--teal-bg);color:var(--teal-d);}
+.panel{display:none;}.panel.on{display:block;}
+.dim{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:18px 20px;margin-bottom:10px;}
+.dim h3{font-size:14.5px;font-weight:700;margin-bottom:4px;color:var(--ink);}
+.dim .dd{font-size:12.5px;color:var(--mut);margin-bottom:12px;}
+.dim .opts{display:flex;flex-direction:column;gap:7px;}
+.dim .opt{display:flex;gap:10px;align-items:center;padding:10px 13px;background:var(--bg);border:1.5px solid var(--line2);border-radius:9px;cursor:pointer;font-size:12.5px;transition:all .15s;color:var(--ink2);}
+.dim .opt:hover{border-color:var(--teal);}
+.dim .opt.sel{border-color:var(--teal);background:var(--teal-bg);color:var(--teal-d);font-weight:600;}
+.dim .opt .dot{width:13px;height:13px;border-radius:50%;border:2px solid var(--faint);flex-shrink:0;}
+.dim .opt.sel .dot{border-color:var(--teal);background:var(--teal);}
+.schema-box{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:20px;margin-bottom:14px;}
+.schema-box label{font-size:13.5px;font-weight:600;display:block;margin-bottom:10px;color:var(--ink);}
+textarea{width:100%;min-height:190px;background:var(--code);border:1px solid var(--line2);border-radius:9px;padding:15px;color:#7FE0C4;font-family:'JetBrains Mono',monospace;font-size:12.5px;line-height:1.6;resize:vertical;}
+textarea:focus{outline:none;border-color:var(--teal);}
+.sample-btn{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--teal-d);background:none;border:1px solid var(--line2);border-radius:6px;padding:6px 11px;cursor:pointer;margin-top:10px;}
+.sample-btn:hover{border-color:var(--teal);}
+.btn{display:block;width:100%;padding:17px;background:var(--teal);color:#fff;border:none;border-radius:12px;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .16s;margin-top:8px;box-shadow:0 6px 20px rgba(14,108,140,0.18);}
+.btn:hover{background:var(--teal-d);transform:translateY(-1px);box-shadow:0 10px 28px rgba(14,108,140,0.24);}
+.btn:disabled{background:var(--line2);color:var(--faint);cursor:not-allowed;transform:none;box-shadow:none;}
+.btn.sec{background:transparent;border:1.5px solid var(--line2);color:var(--ink2);box-shadow:none;}
+.btn.sec:hover{border-color:var(--teal);color:var(--teal-d);background:var(--paper);}
+.result{display:none;margin-top:26px;}
+.result.show{display:block;animation:rise .5s cubic-bezier(.2,.8,.2,1);}
+@keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+.grade{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:30px;text-align:center;margin-bottom:18px;box-shadow:0 12px 40px rgba(22,34,43,0.06);}
+.grade .letter{font-family:'Fraunces',serif;font-size:80px;font-weight:600;line-height:1;}
+.grade .verdict{font-size:13.5px;color:var(--ink2);margin-top:12px;max-width:480px;margin-left:auto;margin-right:auto;line-height:1.65;}
+.checks{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
+.chk{display:flex;gap:12px;align-items:flex-start;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:14px 16px;font-size:13px;}
+.chk .ic{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;flex-shrink:0;width:18px;}
+.chk.pass .ic{color:var(--green);}.chk.warn .ic{color:var(--amber);}.chk.fail .ic{color:var(--red);}
+.chk .body b{display:block;margin-bottom:2px;color:var(--ink);}
+.chk .body span{color:var(--mut);font-size:11.5px;}
+.ref{background:var(--code);border:1px solid var(--line2);border-radius:13px;padding:20px;margin-bottom:16px;}
+.ref h4{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1px;color:#7FE0C4;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;}
+.ref .copy{background:none;border:1px solid #2A4A56;color:#7FE0C4;border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;cursor:pointer;}
+.ref pre{font-family:'JetBrains Mono',monospace;font-size:12px;color:#C7E8DD;line-height:1.6;white-space:pre-wrap;}
+.ref .k{color:#8FD0E8;}.ref .c{color:#6E8694;font-style:italic;}
+.cta{padding:24px;background:linear-gradient(135deg,var(--teal-bg),var(--paper));border:1px solid var(--line);border-radius:16px;}
+.cta h4{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--teal-d);margin-bottom:9px;}
+.cta p{font-size:13px;color:var(--ink2);line-height:1.7;}
+.cta a{color:var(--teal-d);font-weight:600;}
+footer{padding:34px 0 10px;text-align:center;color:var(--mut);font-size:11px;border-top:1px solid var(--line);margin-top:44px;}
+footer .b{font-family:'JetBrains Mono',monospace;color:var(--teal-d);letter-spacing:3px;margin-bottom:7px;font-weight:700;}
+.share-row{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 4px;}
+.share-btn{flex:1;min-width:150px;padding:14px 16px;border-radius:11px;border:1px solid var(--line2);background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.share-btn:hover{border-color:var(--teal-d);color:var(--teal-d);transform:translateY(-1px);}
+.share-btn.copied{border-color:var(--green);color:var(--green);}
+.share-note{font-size:11px;color:var(--mut);text-align:center;margin-top:8px;}
+@media print{.share-row,.share-note{display:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><span class="dot"></span>RYNAUT · ARCHITECTING AUTOMATION</div>
+  <span class="tg">FREE TOOL</span>
+  <h1>Agent Memory Contract Checker</h1>
+  <p class="sub">Memory APIs are commoditising fast &mdash; the differentiator now is the contract around them. Check your agent's memory layer against the eight properties a robust contract needs, or paste your schema and have it validated against the contract pattern directly.</p>
+  <div class="srcbar"><b>WHY NOW</b> &nbsp; Open memory layers (supermemory and peers) cross 25K+ GitHub stars and memory APIs are commoditising. When the API is a commodity, the architecture &mdash; the <i>contract</i> &mdash; is the moat. This tool is free; it builds toward Rynaut's regulated-AI and architecture work.</div>
+</header>
+
+<p class="intro">Bolting a memory layer onto an agent is easy &mdash; the API is one call. What breaks systems in production is the <b>missing contract</b>: no write policy, no schema guarantees, no expiry, no defined failure behaviour. State accumulates, goes stale, and fails in ways that are painful to debug. This tool checks both the <b>design properties</b> of your contract and the <b>structure</b> of your actual schema, and hands you a reference schema to copy.</p>
+
+<div class="tabs">
+  <button class="on" data-p="design" onclick="tab('design',this)">Design checklist</button>
+  <button data-p="schema" onclick="tab('schema',this)">Schema validator</button>
+</div>
+
+<div class="panel on" id="p-design">
+  <div id="dims"></div>
+  <button class="btn" id="designBtn" disabled onclick="gradeDesign()">Grade My Memory Contract</button>
+</div>
+
+<div class="panel" id="p-schema">
+  <div class="schema-box">
+    <label>Paste your memory record schema (JSON)</label>
+    <textarea id="schemaInput" placeholder='{&#10;  "id": "mem_123",&#10;  "content": "user prefers dark mode",&#10;  "type": "preference",&#10;  "created_at": "2026-06-01T10:00:00Z",&#10;  "ttl_days": 90,&#10;  "source": "session_abc",&#10;  "confidence": 0.9&#10;}'></textarea>
+    <button class="sample-btn" onclick="loadSample()">Load sample schema</button>
+  </div>
+  <button class="btn" onclick="validateSchema()">Validate Against Contract Pattern</button>
+</div>
+
+<div class="result" id="result">
+  <div class="grade">
+    <div class="letter" id="letter">&mdash;</div>
+    <div class="verdict" id="verdict"></div>
+  </div>
+  <div class="checks" id="checks"></div>
+  <div class="ref">
+    <h4>RYNAUT REFERENCE MEMORY CONTRACT <button class="copy" onclick="copyRef()" id="copyBtn">copy</button></h4>
+    <pre id="refSchema"></pre>
+  </div>
+  <div class="cta">
+    <h4>Build the contract, not just the integration</h4>
+    <p id="ctaText"></p>
+  </div>
+  <div class="share-row">
+    <button class="share-btn" onclick="copyResult(this)">📋 Copy result summary</button>
+    <button class="share-btn" onclick="window.print()">⬇ Save as PDF</button>
+  </div>
+  <div class="share-note">Share your result in Slack, an email, or a post — or save it as a PDF to keep. Re-run anytime to track progress.</div>
+
+  <button class="btn sec" onclick="reset()">Re-check</button>
+</div>
+
+<footer>
+  <div class="b">RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div>&copy; 2026 Rynaut. Licensed for individual use. Runs entirely in your browser &mdash; your schema never leaves the page.</div>
+</footer>
+</div>
+
+<script>
+const REF_SCHEMA=`{
+  "id": "mem_8f3a2c",           // stable identity: update, dedupe, revoke
+  "content": "...",             // the memory payload
+  "type": "profile_fact",       // enables write policy + scoped retrieval
+  "created_at": "ISO-8601",     // recency for conflict resolution
+  "ttl_days": 180,              // expiry: stops memory rotting
+  "source": "onboarding",       // provenance: trace every memory
+  "confidence": 0.95,           // weight for conflict resolution
+  "schema_version": "1.0"       // contract versioning
+}`;
+const DIMS=[
+  {key:"write",name:"Write policy",d:"What is allowed into long-term memory, and who decides?",opts:[["Anything the agent emits gets written",0],["Heuristic filtering, no formal rule",1],["Explicit, code-enforced write policy",2]]},
+  {key:"schema",name:"Schema guarantee",d:"Do memory records have a typed, validated shape?",opts:[["Free-form text blobs",0],["Loose convention",1],["Typed + validated schema",2]]},
+  {key:"ttl",name:"Expiry / staleness",d:"How does memory stop being stale?",opts:[["Memory lives forever",0],["Manual cleanup",1],["TTL or relevance decay",2]]},
+  {key:"retrieval",name:"Retrieval scoping",d:"Is retrieval bounded, or does it dump everything in?",opts:[["Stuff everything into context",0],["Some top-k",1],["Scoped: top-k + filters + relevance",2]]},
+  {key:"provenance",name:"Provenance",d:"Can you trace where a memory came from?",opts:[["No source tracking",0],["Partial",1],["Every record carries its source",2]]},
+  {key:"failure",name:"Failure behaviour",d:"What happens when the memory layer returns garbage or is down?",opts:[["Agent hard-fails",0],["Partial handling",1],["Graceful, defined fallback",2]]},
+  {key:"conflict",name:"Conflict resolution",d:"Two memories disagree — what wins?",opts:[["Undefined / accidental last-write-wins",0],["Recency only",1],["Explicit precedence (recency+confidence+source)",2]]},
+  {key:"contract_test",name:"Contract test",d:"Is the memory layer's I/O contract actually tested?",opts:[["No tests",0],["Loose validation",1],["Contract/schema test in CI",2]]}
+];
+const answers={};
+function renderDims(){
+  document.getElementById('dims').innerHTML=DIMS.map(d=>
+    '<div class="dim"><h3>'+d.name+'</h3><div class="dd">'+d.d+'</div><div class="opts">'+d.opts.map((o,j)=>'<div class="opt" onclick="pickD(\''+d.key+'\','+j+','+o[1]+',this)"><span class="dot"></span>'+o[0]+'</div>').join('')+'</div></div>'
+  ).join('');
+}
+function pickD(k,j,v,el){answers[k]=v;el.parentElement.querySelectorAll('.opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');document.getElementById('designBtn').disabled=Object.keys(answers).length<DIMS.length;}
+function gradeDesign(){
+  const got=Object.values(answers).reduce((a,b)=>a+b,0);const max=DIMS.length*2;const pct=Math.round(got/max*100);
+  const checks=DIMS.map(d=>{const v=answers[d.key];const cls=v===2?'pass':v===1?'warn':'fail';const ic=v===2?'✓':v===1?'~':'✗';const note=v===2?'Solid — this property holds.':v===1?'Partial — formalise this before it bites you at scale.':'Missing — this is where memory systems silently rot.';return {cls,ic,name:d.name,note};});
+  showResult(pct,checks,'design');
+}
+const REQUIRED=[
+  {field:"id",why:"Stable identity — you can't update, dedupe, or revoke a memory without it.",critical:true},
+  {field:"content",why:"The actual memory payload.",critical:true},
+  {field:"type",why:"Typed memory enables write policy and retrieval scoping by category.",critical:true},
+  {field:"created_at",why:"Timestamp — required for recency-based conflict resolution.",critical:true},
+  {field:"ttl_days",why:"Expiry — without it, memory grows forever and goes stale.",critical:false,alts:["expires_at","ttl"]},
+  {field:"source",why:"Provenance — trace every memory to where it came from.",critical:false,alts:["origin","session_id"]},
+  {field:"confidence",why:"Confidence/weight — needed for principled conflict resolution.",critical:false,alts:["score","weight"]}
+];
+function loadSample(){document.getElementById('schemaInput').value=JSON.stringify({id:"mem_8f3a",content:"user is based in Bangalore, prefers metric units",type:"profile_fact",created_at:"2026-06-01T10:00:00Z",ttl_days:180,source:"onboarding_session",confidence:0.95},null,2);}
+function validateSchema(){
+  const raw=document.getElementById('schemaInput').value.trim();let obj;
+  try{obj=JSON.parse(raw);}catch(e){showResult(0,[{cls:'fail',ic:'✗',name:'JSON parse',note:'Not valid JSON — fix the syntax and re-run. ('+e.message+')'}],'schema',true);return;}
+  const keys=Object.keys(obj).map(k=>k.toLowerCase());let got=0,maxPts=0;
+  const checks=REQUIRED.map(r=>{const present=keys.includes(r.field)||(r.alts||[]).some(a=>keys.includes(a.toLowerCase()));const pts=r.critical?2:1;maxPts+=pts;let cls,ic,note;if(present){got+=pts;cls='pass';ic='✓';note=r.why;}else if(r.critical){cls='fail';ic='✗';note='MISSING (required): '+r.why;}else{cls='warn';ic='~';note='Recommended: '+r.why+(r.alts?(' Accepts: '+r.alts.join(', ')):'');}return {cls,ic,name:r.field,note};});
+  showResult(Math.round(got/maxPts*100),checks,'schema');
+}
+function showResult(pct,checks,mode,parseError){
+  let letter,color,verdict;
+  if(parseError){letter='F';color='var(--red)';verdict='The schema is not valid JSON, so no contract guarantees can hold. Fix the structure first.';}
+  else if(pct>=88){letter='A';color='var(--green)';verdict=mode==='schema'?'This schema carries the full contract — identity, type, recency, expiry, provenance, and confidence. A memory layer built on this is auditable and won\'t silently rot.':'Robust memory contract. Every critical property holds — your agent can scale its memory without inheriting context bleed or silent staleness.';}
+  else if(pct>=68){letter='B';color='var(--teal)';verdict='Good foundation with specific gaps. Close the flagged items below — each is a known failure mode waiting for production scale.';}
+  else if(pct>=45){letter='C';color='var(--amber)';verdict='A working integration, not yet a contract. The gaps below are exactly where memory systems get unpredictable as they grow.';}
+  else{letter='D';color='var(--red)';verdict='This is an API call, not a memory contract. The missing properties below mean state will accumulate, go stale, and fail in hard-to-debug ways. Add the critical fields first.';}
+  document.getElementById('letter').textContent=letter;document.getElementById('letter').style.color=color;
+  document.getElementById('verdict').textContent=verdict;
+  window._shareData={kind:'Agent Memory Contract Checker',line:'Grade '+letter+' — '+(mode==='schema'?'schema validation':'contract design')};
+  document.getElementById('checks').innerHTML=checks.map(c=>'<div class="chk '+c.cls+'"><span class="ic">'+c.ic+'</span><div class="body"><b>'+c.name+'</b><span>'+c.note+'</span></div></div>').join('');
+  document.getElementById('refSchema').textContent=REF_SCHEMA;
+  document.getElementById('ctaText').innerHTML='A memory <i>contract</i> is what separates an agent that scales from one that rots. If your agent touches regulated data, these same properties become audit requirements — see Rynaut\'s <a href="#">Compliance-Native Scorecard</a>. Building agents seriously? The <a href="#">Rynaut agent architecture teardown</a> goes deeper than any memory-API doc.';
+  document.getElementById('result').classList.add('show');
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+function copyRef(){navigator.clipboard.writeText(REF_SCHEMA).then(function(){document.getElementById('copyBtn').textContent='copied';setTimeout(function(){document.getElementById('copyBtn').textContent='copy';},1500);});}
+function tab(p,el){document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('on'));el.classList.add('on');document.querySelectorAll('.panel').forEach(x=>x.classList.remove('on'));document.getElementById('p-'+p).classList.add('on');document.getElementById('result').classList.remove('show');}
+  
+function copyResult(btn){
+  const d=window._shareData;if(!d)return;
+  const txt=d.kind.toUpperCase()+'\n'+d.line+'\n\nGenerated with Rynaut · Architecting Automation';
+  navigator.clipboard.writeText(txt).then(()=>{const o=btn.textContent;btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},1800);});
+}
+function reset(){Object.keys(answers).forEach(k=>delete answers[k]);document.getElementById('designBtn').disabled=true;document.getElementById('result').classList.remove('show');renderDims();window.scrollTo({top:0,behavior:'smooth'});}
+renderDims();
+</script>
+</body>
+</html>

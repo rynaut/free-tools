@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM Evaluator Stack Selector — Rynaut</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F3F1EC;--paper:#FCFBF7;--ink:#1E2519;--ink2:#3F4A37;--mut:#6B7560;--faint:#9AA48F;
+  --line:#E3DFD4;--line2:#D3CDBF;
+  --teal:#13796B;--teal-d:#0E5A4F;--teal-bg:#E0EFEC;
+  --amber:#C2790F;--amber-bg:#FBEFD7;--red:#C2453E;--red-bg:#F7E4E2;
+  --green:#3A8B3F;--green-bg:#E6F2E4;--plum:#7A4B8C;--plum-bg:#F1E8F4;--cyan:#1487A0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 12% 0%,rgba(19,121,107,0.05),transparent 45%),radial-gradient(circle at 88% 100%,rgba(20,135,160,0.04),transparent 40%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 22px 90px;}
+header{padding:44px 0 24px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--teal);font-weight:700;margin-bottom:22px;}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);}
+.tg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:4px 11px;border-radius:20px;font-weight:700;background:var(--plum-bg);color:var(--plum);margin-bottom:16px;border:1px solid #D8C4E4;}
+h1{font-family:'Fraunces',serif;font-size:clamp(30px,5.5vw,46px);font-weight:600;letter-spacing:-0.5px;line-height:1.04;margin-bottom:14px;}
+.sub{font-size:15.5px;color:var(--ink2);max-width:620px;}
+.intro{font-size:15px;color:var(--ink2);margin:28px 0 20px;line-height:1.7;}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:11px;margin-bottom:28px;}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 18px;}
+.stat .n{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--teal-d);line-height:1;}
+.stat .l{font-size:11px;color:var(--mut);margin-top:5px;}
+.prog{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 8px;margin-bottom:6px;}
+.prog-bar{height:4px;background:var(--line);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--plum),var(--cyan));width:0;transition:width .4s;border-radius:3px;}
+.prog-txt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mut);margin-top:6px;letter-spacing:1px;}
+.q-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;margin-top:16px;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--plum);letter-spacing:2px;margin-bottom:8px;}
+.q-text{font-size:16px;font-weight:600;line-height:1.45;margin-bottom:6px;}
+.q-why{font-size:13px;color:var(--mut);margin-bottom:18px;line-height:1.55;}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{padding:13px 17px;background:var(--bg);border:1px solid var(--line);border-radius:9px;cursor:pointer;transition:all .15s;display:flex;gap:12px;align-items:flex-start;}
+.opt:hover{border-color:var(--plum);background:var(--plum-bg);}
+.opt.sel{border-color:var(--plum);background:var(--plum-bg);}
+.opt-key{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:var(--plum);width:22px;flex-shrink:0;margin-top:1px;}
+.opt-label{font-size:14px;font-weight:600;margin-bottom:2px;}
+.opt-sub{font-size:12px;color:var(--mut);}
+.btn{display:block;width:100%;margin-top:18px;padding:15px;background:var(--plum);color:#fff;border:none;border-radius:11px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s;}
+.btn:hover{background:#6A3A7C;}
+.btn:disabled{background:var(--line2);color:var(--faint);cursor:not-allowed;}
+.btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--mut);margin-top:10px;}
+.btn.ghost:hover{border-color:var(--red);color:var(--red);}
+.result{display:none;margin-top:28px;}
+.result.show{display:block;animation:rise .5s ease;}
+@keyframes rise{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:none;}}
+.res-hero{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:28px;margin-bottom:18px;position:relative;overflow:hidden;}
+.res-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--plum),var(--cyan));}
+.res-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--plum);margin-bottom:8px;}
+.res-title{font-family:'Fraunces',serif;font-size:22px;font-weight:600;margin-bottom:6px;}
+.res-sub{font-size:13.5px;color:var(--mut);}
+.tool-grid{display:flex;flex-direction:column;gap:14px;margin-top:4px;}
+.tool-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 22px;position:relative;overflow:hidden;}
+.tool-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--t-color,var(--teal));}
+.tool-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
+.tool-name{font-family:'Fraunces',serif;font-size:20px;font-weight:600;}
+.tool-role{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;background:var(--teal-bg);color:var(--teal-d);}
+.tool-desc{font-size:13.5px;color:var(--ink2);margin-bottom:14px;line-height:1.6;}
+.cov-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:7px;margin-bottom:14px;}
+.cov-item{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px;}
+.cov-layer{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.5px;color:var(--mut);margin-bottom:3px;text-transform:uppercase;}
+.cov-val{font-size:12px;font-weight:700;}
+.cov-yes{color:var(--teal-d);}
+.cov-partial{color:var(--amber);}
+.cov-no{color:var(--faint);}
+.cost-row{display:flex;gap:18px;padding-top:12px;border-top:1px solid var(--line);flex-wrap:wrap;}
+.cost-item span{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.5px;color:var(--mut);display:block;margin-bottom:2px;text-transform:uppercase;}
+.cost-item b{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--teal-d);}
+.share-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.share-btn{flex:1;min-width:140px;padding:13px 16px;border-radius:11px;border:1px solid var(--line2);background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.share-btn:hover{border-color:var(--teal-d);color:var(--teal-d);}
+.share-btn.copied{border-color:var(--green);color:var(--green);}
+footer{padding:30px 0 10px;text-align:center;color:var(--mut);font-size:11px;border-top:1px solid var(--line);margin-top:40px;}
+footer .b{font-family:'JetBrains Mono',monospace;color:var(--teal);letter-spacing:2px;margin-bottom:6px;font-weight:700;}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><span class="dot"></span>RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div class="tg">$19 · LLM EVALUATIONS</div>
+  <h1>LLM Evaluator Stack Selector</h1>
+  <p class="sub">5 questions. Get the exact eval stack for your team, scale, and regulatory context — with tool coverage breakdown and cost estimates.</p>
+</header>
+<p class="intro">Picking the wrong eval stack is expensive. Teams either over-engineer with enterprise platforms before they need them, or under-invest and lose visibility the moment they ship to production. This selector cuts through the noise.</p>
+<div class="stats">
+  <div class="stat"><div class="n">5</div><div class="l">questions</div></div>
+  <div class="stat"><div class="n">5</div><div class="l">tools compared</div></div>
+  <div class="stat"><div class="n">6</div><div class="l">eval layers mapped</div></div>
+</div>
+<div class="prog"><div class="prog-bar"><div class="prog-fill" id="progFill"></div></div><div class="prog-txt" id="progTxt">Question 1 of 5</div></div>
+<div id="qWrap"></div>
+<div class="result" id="result">
+  <div class="res-hero">
+    <div class="res-label">YOUR RECOMMENDED EVAL STACK</div>
+    <div class="res-title" id="resTitle"></div>
+    <div class="res-sub" id="resSub"></div>
+  </div>
+  <div class="tool-grid" id="toolGrid"></div>
+  <div class="share-row">
+    <button class="share-btn" onclick="copyStack(this)">📋 Copy my stack</button>
+    <button class="share-btn" onclick="restart()">↩ Retake</button>
+  </div>
+</div>
+<footer><div class="b">RYNAUT · ARCHITECTING AUTOMATION</div><div>© 2025 Rynaut · Pricing verified as of 2025 — confirm at each tool's website before purchasing.</div></footer>
+</div>
+<script>
+const Qs=[
+  {text:"How big is the team reviewing evaluations?",why:"Team size determines whether you need collaboration features, role-based access, and acceptable setup complexity.",opts:[{k:"A",l:"Solo / 1–2 engineers",s:"I'm the only one running evals",v:"solo"},{k:"B",l:"Small team (3–10)",s:"A few engineers + a PM",v:"small"},{k:"C",l:"Larger team (10+)",s:"Cross-functional, need dashboards and roles",v:"large"}]},
+  {text:"What scale of LLM calls are you evaluating per day?",why:"Scale determines whether you need a cloud platform or a lightweight local setup.",opts:[{k:"A",l:"< 1,000 calls/day",s:"Early stage or low-traffic product",v:"low"},{k:"B",l:"1K–100K calls/day",s:"Production with moderate traffic",v:"mid"},{k:"C",l:"> 100K calls/day",s:"High-traffic production",v:"high"}]},
+  {text:"Is your AI system in a regulated industry?",why:"Regulated industries need audit trails, data residency controls, and compliance-ready exports.",opts:[{k:"A",l:"No — general tech / SaaS",s:"No regulatory requirements",v:"unregulated"},{k:"B",l:"Partially — internal tooling",s:"Some compliance, not customer-facing regulated",v:"partial"},{k:"C",l:"Yes — pharma / finance / healthcare / legal",s:"Full audit trail, HIPAA, GAMP5, or equivalent",v:"regulated"}]},
+  {text:"What's your monthly budget for eval tooling?",why:"Budget determines the tier. All major tools have free tiers — compliance features require paid plans.",opts:[{k:"A",l:"$0 — free tier only",s:"No budget yet, validate first",v:"free"},{k:"B",l:"$50–300/month",s:"Willing to pay for good DX",v:"low_paid"},{k:"C",l:"$300+/month",s:"Eval is core infrastructure",v:"paid"}]},
+  {text:"What's your primary evaluation need right now?",why:"Different tools excel at different layers. Picking the right primary tool prevents over-engineering.",opts:[{k:"A",l:"Tracing & observability",s:"I need visibility inside my LLM calls",v:"tracing"},{k:"B",l:"Automated eval / CI testing",s:"I need evals in CI to catch regressions",v:"testing"},{k:"C",l:"RAG / retrieval quality",s:"I need to measure retrieval relevance and faithfulness",v:"rag"},{k:"D",l:"Production monitoring",s:"I need live alerting on quality degradation",v:"monitoring"}]},
+];
+
+const TOOLS={
+  langfuse:{name:"Langfuse",role:"PRIMARY · TRACING & DATASETS",desc:"Open-source LLM observability with tracing, prompt management, dataset management, and online evals. Self-hostable for full data control. Best all-rounder for most teams.",color:"#13796B",cov:{"Tracing":"yes","Prompt Mgmt":"yes","Datasets":"yes","Online Evals":"yes","RAG Eval":"partial","CI Testing":"partial"},free:"50K events/mo",paid:"$49/mo (Hobby)",sh:"Free forever"},
+  deepeval:{name:"DeepEval",role:"CI TESTING · REGRESSION",desc:"Pytest-based LLM evaluation framework. Write eval test cases like unit tests, run in CI. Best-in-class for automated regression testing with LLM judges.",color:"#3A8B3F",cov:{"Tracing":"no","Prompt Mgmt":"no","Datasets":"partial","Online Evals":"no","RAG Eval":"yes","CI Testing":"yes"},free:"Open source",paid:"$49/mo (Cloud)",sh:"Free (OSS)"},
+  arize:{name:"Arize Phoenix",role:"OBSERVABILITY · OPEN SOURCE",desc:"Open-source ML and LLM observability platform. Strong on embedding analysis, retrieval quality, and production drift detection.",color:"#7A4B8C",cov:{"Tracing":"yes","Prompt Mgmt":"partial","Datasets":"yes","Online Evals":"yes","RAG Eval":"yes","CI Testing":"partial"},free:"Open source",paid:"Arize Cloud (contact)",sh:"Free (OSS)"},
+  braintrust:{name:"Braintrust",role:"ENTERPRISE · FULL PLATFORM",desc:"Full-stack eval platform with real-time scoring, dataset management, prompt playground, and CI integration. Best UX in the category. Preferred for larger teams with budget.",color:"#C2790F",cov:{"Tracing":"yes","Prompt Mgmt":"yes","Datasets":"yes","Online Evals":"yes","RAG Eval":"yes","CI Testing":"yes"},free:"Free tier (limited)",paid:"$200/mo+",sh:"Enterprise plan"},
+  ragas:{name:"RAGAS",role:"RAG SPECIALIST",desc:"Dedicated RAG evaluation framework. Measures faithfulness, answer relevancy, context precision, and recall. Pairs with Langfuse or DeepEval for full coverage.",color:"#1487A0",cov:{"Tracing":"no","Prompt Mgmt":"no","Datasets":"partial","Online Evals":"no","RAG Eval":"yes","CI Testing":"partial"},free:"Open source",paid:"Free (OSS)",sh:"Free (OSS)"},
+};
+
+const CLSCOV={yes:'cov-yes',partial:'cov-partial',no:'cov-no'};
+const LBCOV={yes:'✓ Yes',partial:'~ Partial',no:'— No'};
+
+let cur=0,ans={};
+function build(){
+  const q=Qs[cur];
+  const pct=Math.round(cur/Qs.length*100);
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('progTxt').textContent=`Question ${cur+1} of ${Qs.length}`;
+  document.getElementById('qWrap').innerHTML=`
+    <div class="q-card">
+      <div class="q-num">QUESTION ${String(cur+1).padStart(2,'0')} / 05</div>
+      <div class="q-text">${q.text}</div>
+      <div class="q-why">${q.why}</div>
+      <div class="opts">${q.opts.map(o=>`<div class="opt" onclick="pick('${o.v}',this)"><div class="opt-key">${o.k}</div><div><div class="opt-label">${o.l}</div><div class="opt-sub">${o.s}</div></div></div>`).join('')}</div>
+      <button class="btn" id="btnNext" disabled onclick="next()">Next →</button>
+    </div>`;
+}
+function pick(val,el){
+  document.querySelectorAll('.opt').forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  const keys=['team','scale','regulated','budget','need'];
+  ans[keys[cur]]=val;
+  document.getElementById('btnNext').disabled=false;
+}
+function next(){
+  cur++;
+  if(cur<Qs.length){build();}
+  else{showResult();}
+}
+function getStack(){
+  const{need,regulated,team,budget}=ans;
+  let a,b,c;
+  if(need==='testing')a='deepeval';
+  else if(need==='rag')a='ragas';
+  else a='langfuse';
+  if(a==='langfuse')b='deepeval';
+  else if(a==='deepeval')b='langfuse';
+  else b='langfuse';
+  if(regulated==='regulated'||(team==='large'&&budget==='paid'))c='braintrust';
+  else if(need==='rag'||need==='monitoring')c='arize';
+  else c=null;
+  return[a,b,c].filter(Boolean);
+}
+function monthlyCost(stack){
+  const{budget}=ans;
+  if(budget==='free')return'$0 (free tiers)';
+  if(budget==='low_paid')return stack.includes('braintrust')?'~$250–300/mo':'~$50–100/mo';
+  return stack.includes('braintrust')?'~$400–600/mo':'~$100–200/mo';
+}
+function showResult(){
+  document.getElementById('qWrap').innerHTML='';
+  document.getElementById('progFill').style.width='100%';
+  document.getElementById('progTxt').textContent='Complete';
+  const stack=getStack(),cost=monthlyCost(stack);
+  document.getElementById('resTitle').textContent=stack.map(k=>TOOLS[k].name).join(' + ');
+  document.getElementById('resSub').textContent=`Estimated monthly cost: ${cost} · Based on your team size, scale, and primary evaluation need.`;
+  const grid=document.getElementById('toolGrid');
+  grid.innerHTML='';
+  stack.forEach(k=>{
+    const t=TOOLS[k];
+    const covHtml=Object.entries(t.cov).map(([l,v])=>`<div class="cov-item"><div class="cov-layer">${l}</div><div class="cov-val ${CLSCOV[v]}">${LBCOV[v]}</div></div>`).join('');
+    grid.innerHTML+=`<div class="tool-card" style="--t-color:${t.color}">
+      <div class="tool-top"><div class="tool-name">${t.name}</div><div class="tool-role" style="background:${t.color}22;color:${t.color}">${t.role}</div></div>
+      <div class="tool-desc">${t.desc}</div>
+      <div class="cov-grid">${covHtml}</div>
+      <div class="cost-row">
+        <div class="cost-item"><span>Free tier</span><b>${t.free}</b></div>
+        <div class="cost-item"><span>Paid</span><b>${t.paid}</b></div>
+        <div class="cost-item"><span>Self-host</span><b>${t.sh}</b></div>
+      </div>
+    </div>`;
+  });
+  document.getElementById('result').classList.add('show');
+}
+function copyStack(btn){
+  const stack=getStack(),cost=monthlyCost(stack);
+  const txt=['LLM EVAL STACK RECOMMENDATION — Rynaut','Stack: '+stack.map(k=>TOOLS[k].name).join(' + '),'Cost: '+cost,'',
+    ...stack.map(k=>`${TOOLS[k].name}: ${TOOLS[k].desc}`),'','rynaut.com · Architecting Automation'].join('\n');
+  navigator.clipboard.writeText(txt).then(()=>{
+    btn.textContent='✓ Copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 Copy my stack';btn.classList.remove('copied');},2000);
+  });
+}
+function restart(){
+  cur=0;ans={};
+  document.getElementById('result').classList.remove('show');
+  build();window.scrollTo({top:0,behavior:'smooth'});
+}
+build();
+</script>
+</body>
+</html>
