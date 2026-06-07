@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>headroom Integration Audit — Rynaut</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F3F1EC;--paper:#FCFBF7;--ink:#1E2519;--ink2:#3F4A37;--mut:#6B7560;--faint:#9AA48F;
+  --line:#E3DFD4;--line2:#D3CDBF;
+  --teal:#13796B;--teal-d:#0E5A4F;--teal-bg:#E0EFEC;
+  --amber:#C2790F;--amber-bg:#FBEFD7;--red:#C2453E;--red-bg:#F7E4E2;
+  --green:#3A8B3F;--green-bg:#E6F2E4;--plum:#7A4B8C;--plum-bg:#F1E8F4;--cyan:#1487A0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 12% 0%,rgba(19,121,107,0.05),transparent 45%),radial-gradient(circle at 88% 100%,rgba(20,135,160,0.04),transparent 40%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 22px 90px;}
+header{padding:44px 0 24px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--teal);font-weight:700;margin-bottom:22px;}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);}
+.tg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:4px 11px;border-radius:20px;font-weight:700;background:var(--teal-bg);color:var(--teal-d);margin-bottom:16px;}
+h1{font-family:'Fraunces',serif;font-size:clamp(30px,5.5vw,46px);font-weight:600;letter-spacing:-0.5px;line-height:1.04;margin-bottom:14px;}
+.sub{font-size:15.5px;color:var(--ink2);max-width:620px;}
+.srcbar{margin-top:20px;padding:14px 18px;background:var(--paper);border:1px solid var(--line);border-radius:12px;font-size:12px;color:var(--mut);}
+.srcbar b{color:var(--teal-d);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;}
+.intro{font-size:15px;color:var(--ink2);margin:28px 0 20px;}
+.intro b{color:var(--ink);}
+.market{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:11px;margin-bottom:30px;}
+.mc{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+.mc .n{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:var(--teal-d);line-height:1;}
+.mc .l{font-size:11px;color:var(--mut);margin-top:6px;line-height:1.4;}
+.prog{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 0 10px;margin-bottom:6px;}
+.prog-bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));width:0;transition:width .3s;border-radius:3px;}
+.prog-txt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mut);margin-top:7px;letter-spacing:1px;}
+.pillar-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--cyan);font-weight:700;margin:26px 0 10px;text-transform:uppercase;}
+.q{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:12px;transition:border-color .2s,box-shadow .2s;}
+.q.answered{border-color:var(--teal);box-shadow:0 2px 14px rgba(19,121,107,0.06);}
+.q-head{display:flex;gap:13px;align-items:flex-start;margin-bottom:15px;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal-d);font-weight:700;background:var(--teal-bg);min-width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.q-text{font-size:14.5px;font-weight:600;line-height:1.45;color:var(--ink);}
+.opts{display:flex;flex-direction:column;gap:8px;}
+.opt{display:flex;align-items:center;gap:11px;padding:11px 15px;background:var(--bg);border:1px solid var(--line);border-radius:9px;cursor:pointer;font-size:13.5px;transition:all .15s;color:var(--ink2);}
+.opt:hover{border-color:var(--teal);background:var(--teal-bg);}
+.opt.sel{border-color:var(--teal);background:var(--teal-bg);color:var(--teal-d);font-weight:600;}
+.opt .dot{width:15px;height:15px;border-radius:50%;border:2px solid var(--line2);flex-shrink:0;transition:all .15s;}
+.opt.sel .dot{border-color:var(--teal);background:var(--teal);box-shadow:inset 0 0 0 3px var(--paper);}
+.btn{display:block;width:100%;margin-top:22px;padding:16px;background:var(--teal);color:#fff;border:none;border-radius:11px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s,transform .15s;}
+.btn:hover{background:var(--teal-d);transform:translateY(-1px);}
+.btn:disabled{background:var(--line2);color:var(--faint);cursor:not-allowed;transform:none;}
+.btn.reset{background:transparent;border:1px solid var(--line2);color:var(--mut);}
+.btn.reset:hover{background:var(--paper);border-color:var(--red);color:var(--red);}
+.result{margin-top:30px;display:none;}
+.result.show{display:block;animation:rise .5s ease;}
+@keyframes rise{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.verdict-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:32px;text-align:center;margin-bottom:18px;position:relative;overflow:hidden;}
+.verdict-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--bandcolor,var(--teal));}
+.r-score{font-family:'Fraunces',serif;font-size:68px;font-weight:600;line-height:1;}
+.r-band{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:3px;font-weight:700;margin:8px 0 18px;}
+.r-bar{height:12px;background:var(--line);border-radius:7px;overflow:hidden;margin:0 auto 18px;max-width:380px;}
+.r-fill{height:100%;border-radius:7px;width:0;transition:width 1s cubic-bezier(.2,.8,.2,1);}
+.r-verdict{font-size:14.5px;line-height:1.7;color:var(--ink2);max-width:540px;margin:0 auto;}
+.r-breakdown{display:flex;flex-direction:column;gap:9px;margin:18px 0;}
+.r-row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:13px 18px;}
+.r-row .cat{font-size:13px;color:var(--ink);font-weight:600;}
+.r-row .cat span{display:block;font-size:11px;color:var(--mut);font-weight:400;margin-top:2px;}
+.r-row .val{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;text-align:right;white-space:nowrap;}
+.cta{margin-top:20px;padding:22px;background:var(--teal-bg);border:1px solid #C8E3DD;border-radius:14px;}
+.cta h4{font-family:'Fraunces',serif;font-size:17px;color:var(--teal-d);margin-bottom:8px;font-weight:600;}
+.cta p{font-size:13px;color:var(--ink2);line-height:1.65;}
+.cta a{color:var(--teal-d);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+footer{padding:30px 0 10px;text-align:center;color:var(--mut);font-size:11px;border-top:1px solid var(--line);margin-top:40px;}
+footer .b{font-family:'JetBrains Mono',monospace;color:var(--teal);letter-spacing:2px;margin-bottom:6px;font-weight:700;}
+@media print{body::before{display:none;}.prog,.btn,.cta a{display:none;}.q{break-inside:avoid;}}
+.share-row{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 4px;}
+.share-btn{flex:1;min-width:150px;padding:14px 16px;border-radius:11px;border:1px solid var(--line2);background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.share-btn:hover{border-color:var(--teal-d);color:var(--teal-d);transform:translateY(-1px);}
+.share-btn.copied{border-color:var(--green);color:var(--green);}
+.share-note{font-size:11px;color:var(--mut);text-align:center;margin-top:8px;}
+@media print{.share-row,.share-note{display:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><span class="dot"></span>RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div class="tg">FREE TOOL · INTEGRATION READINESS</div>
+  <h1>headroom Integration Audit</h1>
+  <p class="sub">Before you bolt a context/memory orchestration layer onto your agent, find out whether your architecture can actually absorb it. Eight checks across four pillars — a readiness band and your highest-leverage fixes in under two minutes.</p>
+  <div class="srcbar"><b>SIGNAL</b> &nbsp;Context-orchestration layers (headroom and peers) are among the fastest-climbing agent-infra projects on GitHub — memory tooling is going mainstream while the architectural discipline around it lags.</div>
+</header>
+
+<p class="intro">Most teams add a memory layer to an agent that isn't ready for one, then spend months fighting context bleed, stale state, and silent token blowups. The orchestration layer doesn't cause those problems — it <b>amplifies</b> whatever discipline you already have. This audit tells you whether to integrate now or harden first.</p>
+
+<div class="market">
+  <div class="mc"><div class="n">4</div><div class="l">readiness pillars assessed</div></div>
+  <div class="mc"><div class="n">8</div><div class="l">architecture checks</div></div>
+  <div class="mc"><div class="n">~2min</div><div class="l">to your readiness band</div></div>
+</div>
+
+<div class="prog">
+  <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+  <div class="prog-txt" id="progTxt">0 / 8 answered</div>
+</div>
+
+<div id="quiz"></div>
+
+<button class="btn" id="scoreBtn" disabled onclick="score()">Calculate readiness score</button>
+
+<div class="result" id="result">
+  <div class="verdict-card" id="vcard">
+    <div class="r-score" id="rScore">—</div>
+    <div class="r-band" id="rBand"></div>
+    <div class="r-bar"><div class="r-fill" id="rFill"></div></div>
+    <div class="r-verdict" id="rVerdict"></div>
+  </div>
+  <div class="r-breakdown" id="rBreakdown"></div>
+  <div class="cta">
+    <h4 id="ctaHead">Your next step</h4>
+    <p id="ctaText"></p>
+  </div>
+  <div class="share-row">
+    <button class="share-btn" onclick="copyResult(this)">📋 Copy result summary</button>
+    <button class="share-btn" onclick="window.print()">⬇ Save as PDF</button>
+  </div>
+  <div class="share-note">Share your result in Slack, an email, or a post — or save it as a PDF to keep. Re-run anytime to track progress.</div>
+  <button class="btn reset" onclick="reset()">Re-run audit</button>
+</div>
+
+<footer>
+  <div class="b">RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div>© 2026 Rynaut. Licensed for individual use. Runs entirely in your browser — nothing is transmitted or stored.</div>
+</footer>
+</div>
+
+<script>
+const QUESTIONS=[
+  {cat:"Context Boundaries",q:"Does each agent run start from an explicitly defined context window, or does state accumulate freely across turns?",
+   opts:[["Explicit, bounded context per run",2],["Mostly bounded, some leakage",1],["State accumulates freely",0]]},
+  {cat:"Context Boundaries",q:"Can you point to exactly which memories or documents were injected into any given response?",
+   opts:[["Yes — fully traceable",2],["Partially, for some calls",1],["No — it's a black box",0]]},
+  {cat:"Memory Hygiene",q:"Do you have a write policy — explicit rules for what is allowed to persist to long-term memory?",
+   opts:[["Yes, enforced in code",2],["Informal convention only",1],["Anything can be written",0]]},
+  {cat:"Memory Hygiene",q:"Is there a staleness or expiry mechanism for stored memory?",
+   opts:[["Yes — TTL or relevance decay",2],["Manual cleanup only",1],["None — memory grows forever",0]]},
+  {cat:"Cost Control",q:"Do you track tokens-per-task and catch blowups before they hit the bill?",
+   opts:[["Yes — instrumented with alerts",2],["We see it after the fact",1],["No visibility",0]]},
+  {cat:"Cost Control",q:"Is retrieval scoped (top-k, filters), rather than dumping everything into the prompt?",
+   opts:[["Tightly scoped retrieval",2],["Some scoping",1],["Stuff-everything approach",0]]},
+  {cat:"Failure Isolation",q:"If the memory layer returns garbage or is down, does the agent degrade gracefully or hard-fail?",
+   opts:[["Graceful, defined fallback",2],["Partial handling",1],["It just breaks",0]]},
+  {cat:"Failure Isolation",q:"Do you have a contract or schema test for what the memory layer returns?",
+   opts:[["Yes — contract-tested in CI",2],["Loose validation",1],["No tests",0]]},
+];
+const PILLAR_FIX={
+  "Context Boundaries":"Define a bounded context per run and make injection traceable — log which memories entered each response before you add more sources.",
+  "Memory Hygiene":"Write a code-enforced write policy and add TTL/decay. This is the single highest-leverage fix; unbounded memory is what rots agent systems.",
+  "Cost Control":"Instrument tokens-per-task with alerts and scope retrieval to top-k + filters before a memory layer multiplies your context size.",
+  "Failure Isolation":"Add a contract test on the memory layer's output and a graceful fallback path, so a bad memory response can't take the agent down."
+};
+const answers=new Array(QUESTIONS.length).fill(null);
+const quiz=document.getElementById('quiz');
+let lastCat='';
+QUESTIONS.forEach((item,i)=>{
+  if(item.cat!==lastCat){const t=document.createElement('div');t.className='pillar-tag';t.textContent=item.cat;quiz.appendChild(t);lastCat=item.cat;}
+  const div=document.createElement('div');div.className='q';div.id='q'+i;
+  div.innerHTML='<div class="q-head"><div class="q-num">'+(i+1)+'</div><div class="q-text">'+item.q+'</div></div><div class="opts">'+item.opts.map((o,j)=>'<div class="opt" data-q="'+i+'" data-j="'+j+'" onclick="pick('+i+','+j+')"><span class="dot"></span>'+o[0]+'</div>').join('')+'</div>';
+  quiz.appendChild(div);
+});
+function pick(qi,j){
+  answers[qi]=QUESTIONS[qi].opts[j][1];
+  document.querySelectorAll('.opt[data-q="'+qi+'"]').forEach(el=>el.classList.toggle('sel',+el.dataset.j===j));
+  document.getElementById('q'+qi).classList.add('answered');
+  const done=answers.filter(a=>a!==null).length;
+  document.getElementById('progFill').style.width=(done/QUESTIONS.length*100)+'%';
+  document.getElementById('progTxt').textContent=done+' / '+QUESTIONS.length+' answered';
+  document.getElementById('scoreBtn').disabled=done<QUESTIONS.length;
+}
+function score(){
+  const total=answers.reduce((a,b)=>a+b,0);
+  const pct=Math.round(total/16*100);
+  const pillarScores={};
+  QUESTIONS.forEach((item,i)=>{pillarScores[item.cat]=(pillarScores[item.cat]||0)+answers[i];});
+  let band,color,verdict,ctaHead,cta;
+  if(pct>=80){band="INTEGRATION-READY";color="var(--green)";verdict="Your architecture has the boundaries, hygiene, and failure isolation to absorb a memory orchestration layer cleanly. Integrate now — you'll get the upside without inheriting the chaos.";ctaHead="You're ready — integrate deliberately";cta="Wire the layer in behind a contract test and instrument tokens-per-task from day one. The free <a href='#'>Agent Memory Contract Checker</a> validates your memory schema before you ship it.";}
+  else if(pct>=55){band="HARDEN FIRST";color="var(--amber)";verdict="The bones are there, but you have gaps a memory layer will amplify rather than fix. Close your two weakest pillars before integrating, or you'll spend the next quarter debugging context bleed.";ctaHead="Close two gaps, then integrate";cta="Start with your lowest-scoring pillar below. The free <a href='#'>Agent Memory Contract Checker</a> turns the hygiene fixes into a concrete schema; the <a href='#'>Compliance-Native Scorecard</a> matters if your agent touches regulated data.";}
+  else{band="NOT READY";color="var(--red)";verdict="Integrating now would paper over structural problems — unbounded state, no write policy, no cost visibility. A memory layer will make these failures faster and more expensive, not safer.";ctaHead="Don't integrate yet";cta="Fix context boundaries and a write policy first. The free <a href='#'>Agent Memory Contract Checker</a> shows the target design, and a <a href='#'>20-minute architecture review</a> can sequence the fixes for your stack.";}
+  const vc=document.getElementById('vcard');vc.style.setProperty('--bandcolor',color);
+  document.getElementById('rScore').textContent=pct;
+  document.getElementById('rScore').style.color=color;
+  document.getElementById('rBand').textContent=band;
+  document.getElementById('rBand').style.color=color;
+  window._shareData={kind:'headroom Integration Audit',line:'Readiness '+pct+'/100 — '+band};
+  const fill=document.getElementById('rFill');fill.style.background=color;setTimeout(()=>fill.style.width=pct+'%',60);
+  document.getElementById('rVerdict').textContent=verdict;
+  const ranked=Object.entries(pillarScores).sort((a,b)=>a[1]-b[1]);
+  document.getElementById('rBreakdown').innerHTML=ranked.map(([k,v])=>{
+    const p=Math.round(v/4*100);
+    const c=p>=75?'var(--green)':p>=50?'var(--amber)':'var(--red)';
+    const fix=p<75?'<span>'+PILLAR_FIX[k]+'</span>':'<span>Solid — this pillar holds.</span>';
+    return '<div class="r-row"><div class="cat">'+k+fix+'</div><div class="val" style="color:'+c+'">'+v+'/4 · '+p+'%</div></div>';
+  }).join('');
+  document.getElementById('ctaHead').textContent=ctaHead;
+  document.getElementById('ctaText').innerHTML=cta;
+  document.getElementById('result').classList.add('show');
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+  
+function copyResult(btn){
+  const d=window._shareData;if(!d)return;
+  const txt=d.kind.toUpperCase()+'\n'+d.line+'\n\nGenerated with Rynaut · Architecting Automation';
+  navigator.clipboard.writeText(txt).then(()=>{const o=btn.textContent;btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},1800);});
+}
+function reset(){
+  answers.fill(null);
+  document.querySelectorAll('.opt').forEach(el=>el.classList.remove('sel'));
+  document.querySelectorAll('.q').forEach(el=>el.classList.remove('answered'));
+  document.getElementById('progFill').style.width='0';
+  document.getElementById('progTxt').textContent='0 / 8 answered';
+  document.getElementById('scoreBtn').disabled=true;
+  document.getElementById('result').classList.remove('show');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
