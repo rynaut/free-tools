@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VSCode GitHub Token Security Audit — Rynaut</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F4F1EC;--paper:#FCFBF8;--ink:#241E1A;--ink2:#473D36;--mut:#766A60;--faint:#A99C90;
+  --line:#E6DFD6;--line2:#D6CCC0;
+  --rust:#B5502E;--rust-d:#8F3C1F;--rust-bg:#F6E6DE;
+  --amber:#C2790F;--amber-bg:#FBEFD7;--red:#BC3B33;--red-bg:#F7E2DF;
+  --green:#3A8B3F;--green-bg:#E6F2E4;--slate:#4A6670;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 90% 0%,rgba(181,80,46,0.05),transparent 42%),radial-gradient(circle at 5% 95%,rgba(74,102,112,0.04),transparent 40%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 22px 90px;}
+header{padding:44px 0 24px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--rust);font-weight:700;margin-bottom:22px;}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--rust);}
+.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.tg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:4px 11px;border-radius:20px;font-weight:700;background:var(--rust-bg);color:var(--rust-d);}
+.tg.live{background:var(--green-bg);color:var(--green);display:flex;align-items:center;gap:6px;}
+.tg.live::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.5s infinite;}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.25;}}
+h1{font-family:'Fraunces',serif;font-size:clamp(28px,5vw,44px);font-weight:600;letter-spacing:-0.5px;line-height:1.05;margin-bottom:14px;}
+.sub{font-size:15.5px;color:var(--ink2);max-width:620px;}
+.srcbar{margin-top:20px;padding:14px 18px;background:var(--paper);border:1px solid var(--line);border-radius:12px;font-size:12px;color:var(--mut);}
+.srcbar b{color:var(--rust-d);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;}
+.intro{font-size:15px;color:var(--ink2);margin:28px 0 20px;}
+.intro b{color:var(--ink);}
+.sec-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--rust);font-weight:700;margin:26px 0 10px;text-transform:uppercase;}
+.check{display:flex;gap:14px;align-items:flex-start;padding:16px 18px;background:var(--paper);border:1px solid var(--line);border-radius:13px;margin-bottom:10px;cursor:pointer;transition:all .15s;}
+.check:hover{border-color:var(--rust);}
+.check.done{border-color:var(--green);background:var(--green-bg);}
+.cbox{width:23px;height:23px;border-radius:7px;border:2px solid var(--line2);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px;background:var(--bg);}
+.check.done .cbox{border-color:var(--green);background:var(--green);}
+.cbox svg{width:14px;height:14px;opacity:0;transition:opacity .15s;}
+.check.done .cbox svg{opacity:1;}
+.c-body{flex:1;}
+.c-title{font-size:14px;font-weight:600;line-height:1.4;color:var(--ink);display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+.c-desc{font-size:12.5px;color:var(--mut);margin-top:5px;line-height:1.55;}
+.c-fix{font-size:11.5px;color:var(--slate);margin-top:8px;line-height:1.5;padding-left:12px;border-left:2px solid var(--line2);}
+.c-fix b{color:var(--ink2);}
+.c-fix code{font-family:'JetBrains Mono',monospace;font-size:10.5px;background:var(--bg);padding:1px 5px;border-radius:4px;border:1px solid var(--line);color:var(--rust-d);}
+.c-sev{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:1px;padding:3px 8px;border-radius:5px;font-weight:700;white-space:nowrap;flex-shrink:0;}
+.sev-crit{background:var(--red-bg);color:var(--red);}
+.sev-high{background:var(--amber-bg);color:var(--amber);}
+.sev-med{background:#E7EDEF;color:var(--slate);}
+.panel{position:sticky;bottom:14px;z-index:6;margin-top:24px;background:var(--paper);border:1px solid var(--line2);border-radius:16px;padding:22px;box-shadow:0 8px 30px rgba(36,30,26,0.1);}
+.p-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:12px;}
+.p-score{font-family:'Fraunces',serif;font-size:42px;font-weight:600;line-height:1;}
+.p-band{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;font-weight:700;}
+.p-count{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut);text-align:right;}
+.p-bar{height:11px;background:var(--line);border-radius:6px;overflow:hidden;}
+.p-fill{height:100%;width:0;transition:width .6s cubic-bezier(.2,.8,.2,1);border-radius:6px;}
+.p-msg{font-size:12.5px;color:var(--ink2);margin-top:12px;line-height:1.6;}
+.p-msg b{color:var(--ink);}
+.cta{margin-top:22px;padding:22px;background:var(--rust-bg);border:1px solid #EAD3C8;border-radius:14px;}
+.cta h4{font-family:'Fraunces',serif;font-size:17px;color:var(--rust-d);margin-bottom:8px;font-weight:600;}
+.cta p{font-size:13px;color:var(--ink2);line-height:1.65;}
+.cta a{color:var(--rust-d);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+footer{padding:30px 0 10px;text-align:center;color:var(--mut);font-size:11px;border-top:1px solid var(--line);margin-top:40px;}
+footer .b{font-family:'JetBrains Mono',monospace;color:var(--rust);letter-spacing:2px;margin-bottom:6px;font-weight:700;}
+@media print{body::before{display:none;}.panel{position:static;box-shadow:none;}.cta a{display:none;}.check{break-inside:avoid;}}
+.share-row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0 0;}
+.share-btn{flex:1;min-width:150px;padding:13px 16px;border-radius:11px;border:1px solid var(--line2);background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.share-btn:hover{border-color:var(--rust);color:var(--rust-d);transform:translateY(-1px);}
+.share-btn.copied{border-color:var(--green);color:var(--green);}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><span class="dot"></span>RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div class="tagrow"><span class="tg">FREE TOOL · DEV SECURITY</span><span class="tg live">LIVE CONCERN</span></div>
+  <h1>VSCode GitHub Token Security Audit</h1>
+  <p class="sub">Your editor, its extensions, and the integrated terminal touch your GitHub credentials constantly — and the defaults are not safe. Check the twelve controls that decide whether a leaked token is a shrug or a full-repo compromise.</p>
+  <div class="srcbar"><b>WHY NOW</b> &nbsp;Editor-resident credential exposure is a recurring front-page security topic — over-scoped personal access tokens and plaintext credential stores remain one of the most common real-world repo-compromise paths.</div>
+</header>
+
+<p class="intro">A leaked personal access token with broad scope is a full-repo compromise — source, secrets, CI, the lot. The fix isn't a tool you buy; it's twelve controls you either have or don't. <b>Tick what's actually true in your setup.</b> The score reflects your real exposure, and every unchecked item comes with the exact remediation.</p>
+
+<div id="list"></div>
+
+<div class="panel">
+  <div class="p-top">
+    <div>
+      <div class="p-score" id="pScore" style="color:var(--faint)">0</div>
+      <div class="p-band" id="pBand" style="color:var(--mut)">START CHECKING ABOVE</div>
+    </div>
+    <div class="p-count" id="pCount">0 / 12 controls</div>
+  </div>
+  <div class="p-bar"><div class="p-fill" id="pFill"></div></div>
+  <div class="p-msg" id="pMsg">Tick the controls you have in place to see your exposure score update in real time.</div>
+  <div class="share-row">
+    <button class="share-btn" onclick="copyResult(this)">📋 Copy result summary</button>
+    <button class="share-btn" onclick="window.print()">⬇ Save as PDF</button>
+  </div>
+</div>
+
+<div class="cta">
+  <h4>Close the criticals first</h4>
+  <p>Every unchecked <b>CRITICAL</b> is a single-step path to full repo access if a token leaks. Fix those before anything else. If your repos touch regulated data or models, the same credential hygiene becomes an audit requirement — see Rynaut's <a href="#">Compliance-Native Scorecard</a>. Print this audit (Ctrl/Cmd+P) as your remediation checklist.</p>
+</div>
+
+<footer>
+  <div class="b">RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div>© 2026 Rynaut. Licensed for individual use. Runs entirely in your browser — nothing is transmitted or stored.</div>
+</footer>
+</div>
+
+<script>
+const CONTROLS=[
+  {sec:"Token Scope & Lifetime",items:[
+    {t:"Using fine-grained PATs, not classic tokens",d:"Classic PATs grant blanket account-wide access. Fine-grained tokens scope to specific repos and permissions.",sev:"crit",w:3,fix:"Create fine-grained tokens under <b>Settings → Developer settings → Fine-grained tokens</b>, scoped to single repos. Revoke every classic PAT you can."},
+    {t:"Token expiry set to 90 days or less",d:"Non-expiring tokens are a permanent liability the day they leak.",sev:"high",w:2,fix:"Set an expiry on every token. Short-lived tokens limit the blast-radius window to weeks, not forever."},
+    {t:"No token carries full repo + workflow + admin scope",d:"Over-scoped tokens turn a single leak into total compromise of code, CI, and settings.",sev:"crit",w:3,fix:"Grant only the minimum permission each task needs (often read-only contents). Never tick <code>admin</code> on a token used by an editor."},
+  ]},
+  {sec:"Storage & Exposure",items:[
+    {t:"Tokens stored in the OS keychain, not settings.json",d:"Plaintext tokens in settings or .env files get committed and synced.",sev:"crit",w:3,fix:"Use the OS credential manager (macOS Keychain, Windows Credential Manager, libsecret). Audit <code>settings.json</code> and remove any inline tokens now."},
+    {t:"No tokens in shell history or terminal env vars",d:"<code>export GH_TOKEN=...</code> lands in .bash_history and is visible in process listings.",sev:"high",w:2,fix:"Use <code>gh auth login</code> or a credential helper. Clear history entries that contain tokens and prefer a secret manager over exported env vars."},
+    {t:"Settings Sync excludes credential-bearing files",d:"VSCode Settings Sync can replicate secrets across machines and even accounts.",sev:"high",w:2,fix:"Confirm Settings Sync only covers settings, keybindings, and extensions — never custom files holding secrets."},
+    {t:"git credential helper uses an encrypted store",d:"The <code>store</code> helper writes plaintext to ~/.git-credentials.",sev:"high",w:2,fix:"Switch to <code>osxkeychain</code>, <code>manager</code> (Windows), or <code>libsecret</code> (Linux). Never use <code>credential.helper store</code> on a shared machine."},
+  ]},
+  {sec:"Extension Surface",items:[
+    {t:"Audited which extensions request GitHub auth scopes",d:"Any extension can request your GitHub session through the editor auth API.",sev:"high",w:2,fix:"Review authorized OAuth apps and extension permissions at <b>github.com/settings/applications</b>; revoke anything you don't recognize or use."},
+    {t:"Removed unused / unmaintained extensions with repo access",d:"Abandoned extensions are a supply-chain attack vector.",sev:"med",w:1,fix:"Uninstall extensions you haven't used in 90 days. Each one is attack surface that auto-updates with code you don't review."},
+    {t:"Extensions installed only from verified publishers",d:"Typosquatted extensions exist specifically to harvest credentials.",sev:"med",w:1,fix:"Check the publisher and install count before installing. Prefer verified publishers; be suspicious of near-duplicate names."},
+  ]},
+  {sec:"Detection & Recovery",items:[
+    {t:"GitHub secret scanning + push protection enabled",d:"Blocks tokens from being committed and alerts on leaks already in history.",sev:"crit",w:3,fix:"Enable <b>secret scanning</b> and <b>push protection</b> in repo/org security settings — free for public repos and the cheapest safety net you'll ever add."},
+    {t:"You can revoke and rotate every token in under 5 minutes",d:"If you don't know where your tokens live, you can't contain a breach.",sev:"high",w:2,fix:"Keep an inventory of active tokens and what uses each. Practice a rotation so that, under pressure, containment is muscle memory."},
+  ]},
+];
+const SVG='<svg viewBox="0 0 24 24" fill="none" stroke="#FCFBF8" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+const sevLabel={crit:"CRITICAL",high:"HIGH",med:"MEDIUM"};
+let total=0, items=[];
+const list=document.getElementById('list');
+CONTROLS.forEach(group=>{
+  const h=document.createElement('div');h.className='sec-title';h.textContent=group.sec;list.appendChild(h);
+  group.items.forEach(it=>{
+    total+=it.w;
+    const idx=items.length;items.push({w:it.w,done:false});
+    const d=document.createElement('div');d.className='check';d.dataset.i=idx;
+    d.innerHTML='<div class="cbox">'+SVG+'</div><div class="c-body"><div class="c-title"><span>'+it.t+'</span><span class="c-sev sev-'+it.sev+'">'+sevLabel[it.sev]+'</span></div><div class="c-desc">'+it.d+'</div><div class="c-fix"><b>Fix:</b> '+it.fix+'</div></div>';
+    d.onclick=()=>toggle(idx,d);
+    list.appendChild(d);
+  });
+});
+function toggle(i,el){items[i].done=!items[i].done;el.classList.toggle('done',items[i].done);render();}
+function render(){
+  const got=items.filter(x=>x.done).reduce((a,b)=>a+b.w,0);
+  const n=items.filter(x=>x.done).length;
+  const pct=Math.round(got/total*100);
+  document.getElementById('pScore').textContent=pct;
+  document.getElementById('pCount').textContent=n+' / '+items.length+' controls';
+  let band,color,msg;
+  if(pct>=85){band="HARDENED";color="var(--green)";msg="<b>Strong posture.</b> A leaked token here causes limited, recoverable damage. Keep rotation tight and re-audit extensions quarterly.";}
+  else if(pct>=55){band="MODERATE RISK";color="var(--amber)";msg="<b>Meaningful gaps remain.</b> Close your unchecked CRITICAL controls — those convert a single leak into full repo compromise.";}
+  else if(pct>0){band="HIGH EXPOSURE";color="var(--red)";msg="<b>Dangerous defaults.</b> Several single-step paths to total access are open. Treat this as an active liability, not a backlog item.";}
+  else{band="START CHECKING ABOVE";color="var(--mut)";msg="Tick the controls you have in place to see your exposure score update in real time.";}
+  document.getElementById('pScore').style.color=pct>0?color:'var(--faint)';
+  document.getElementById('pBand').textContent=band;
+  document.getElementById('pBand').style.color=color;
+  const fill=document.getElementById('pFill');fill.style.width=pct+'%';fill.style.background=color;
+  document.getElementById('pMsg').innerHTML=msg;
+  const openCrit=CONTROLS.flatMap(g=>g.items).filter((it,i)=>!items[i].done&&it.sev==='crit').length;
+  window._shareData={pct:pct,band:band,openCrit:openCrit};
+}
+function copyResult(btn){
+  const d=window._shareData;if(!d){return;}
+  const txt='VSCODE GITHUB TOKEN SECURITY AUDIT\n'
+    +'Hardening score: '+d.pct+'/100 — '+d.band+'\n'
+    +(d.openCrit>0?('Open CRITICAL controls: '+d.openCrit+'\n'):'All critical controls in place.\n')
+    +'\nAudited with Rynaut · Architecting Automation';
+  navigator.clipboard.writeText(txt).then(()=>{const o=btn.textContent;btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},1800);});
+}
+</script>
+</body>
+</html>
