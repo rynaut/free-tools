@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Testing Contract Checker — Rynaut</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F3F1EC;--paper:#FCFBF7;--ink:#1E2519;--ink2:#3F4A37;--mut:#6B7560;--faint:#9AA48F;
+  --line:#E3DFD4;--line2:#D3CDBF;
+  --teal:#13796B;--teal-d:#0E5A4F;--teal-bg:#E0EFEC;
+  --amber:#C2790F;--amber-bg:#FBEFD7;--red:#C2453E;--red-bg:#F7E4E2;
+  --green:#3A8B3F;--green-bg:#E6F2E4;--plum:#7A4B8C;--plum-bg:#F1E8F4;--cyan:#1487A0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 12% 0%,rgba(19,121,107,0.05),transparent 45%),radial-gradient(circle at 88% 100%,rgba(20,135,160,0.04),transparent 40%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 22px 90px;}
+header{padding:44px 0 24px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--teal);font-weight:700;margin-bottom:22px;}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);}
+.tg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:4px 11px;border-radius:20px;font-weight:700;background:var(--teal-bg);color:var(--teal-d);margin-bottom:16px;}
+h1{font-family:'Fraunces',serif;font-size:clamp(30px,5.5vw,46px);font-weight:600;letter-spacing:-0.5px;line-height:1.04;margin-bottom:14px;}
+.sub{font-size:15.5px;color:var(--ink2);max-width:620px;}
+.intro{font-size:15px;color:var(--ink2);margin:28px 0 20px;line-height:1.7;}
+.intro b{color:var(--ink);}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:11px;margin-bottom:30px;}
+.stat{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+.stat .n{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:var(--teal-d);line-height:1;}
+.stat .l{font-size:11px;color:var(--mut);margin-top:6px;line-height:1.4;}
+.prog{position:sticky;top:0;z-index:5;background:var(--bg);padding:14px 0 10px;margin-bottom:6px;}
+.prog-bar{height:5px;background:var(--line);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));width:0;transition:width .3s;border-radius:3px;}
+.prog-txt{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--mut);margin-top:7px;letter-spacing:1px;}
+.domain-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--cyan);font-weight:700;margin:26px 0 10px;text-transform:uppercase;}
+.q{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:12px;transition:border-color .2s,box-shadow .2s;}
+.q.answered{border-color:var(--teal);box-shadow:0 2px 14px rgba(19,121,107,0.06);}
+.q-head{display:flex;gap:13px;align-items:flex-start;margin-bottom:10px;}
+.q-num{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--teal-d);font-weight:700;background:var(--teal-bg);min-width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.q-text{font-size:14.5px;font-weight:600;line-height:1.45;color:var(--ink);}
+.q-why{font-size:13px;color:var(--mut);margin:6px 0 14px;line-height:1.55;}
+.opts{display:flex;gap:10px;flex-wrap:wrap;}
+.opt{padding:10px 18px;background:var(--bg);border:1px solid var(--line);border-radius:9px;cursor:pointer;font-size:13.5px;font-weight:600;transition:all .15s;color:var(--ink2);}
+.opt:hover{border-color:var(--teal);background:var(--teal-bg);}
+.opt.yes.sel{border-color:var(--teal);background:var(--teal-bg);color:var(--teal-d);}
+.opt.no.sel{border-color:var(--red);background:var(--red-bg);color:var(--red);}
+.btn{display:block;width:100%;margin-top:24px;padding:16px;background:var(--teal);color:#fff;border:none;border-radius:11px;font-family:'Inter',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s,transform .15s;}
+.btn:hover{background:var(--teal-d);transform:translateY(-1px);}
+.btn:disabled{background:var(--line2);color:var(--faint);cursor:not-allowed;transform:none;}
+.btn.reset{background:transparent;border:1px solid var(--line2);color:var(--mut);margin-top:10px;}
+.btn.reset:hover{background:var(--paper);border-color:var(--red);color:var(--red);}
+.result{margin-top:30px;display:none;}
+.result.show{display:block;animation:rise .5s ease;}
+@keyframes rise{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:none;}}
+.verdict-card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:32px;text-align:center;margin-bottom:18px;position:relative;overflow:hidden;}
+.verdict-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--vc-color,var(--teal));}
+.r-score{font-family:'Fraunces',serif;font-size:72px;font-weight:600;line-height:1;}
+.r-band{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:3px;font-weight:700;margin:8px 0 6px;}
+.r-verdict{font-size:14.5px;line-height:1.7;color:var(--ink2);max-width:540px;margin:0 auto;}
+.gap-list{display:flex;flex-direction:column;gap:10px;margin:20px 0;}
+.gap{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 20px;border-left:3px solid var(--g-color,var(--line2));}
+.gap.fail{--g-color:var(--red);}
+.gap.pass{--g-color:var(--teal);}
+.gap-head{display:flex;gap:10px;align-items:center;margin-bottom:4px;}
+.gap-icon{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;}
+.gap.fail .gap-icon{background:var(--red-bg);color:var(--red);}
+.gap.pass .gap-icon{background:var(--teal-bg);color:var(--teal-d);}
+.gap-title{font-size:13.5px;font-weight:600;}
+.gap-fix{font-size:13px;color:var(--mut);line-height:1.6;margin-top:4px;}
+.gap-fix strong{color:var(--amber);}
+.email-box{background:var(--teal-bg);border:1px solid #C8E3DD;border-radius:14px;padding:22px 24px;margin-top:20px;}
+.email-box h4{font-family:'Fraunces',serif;font-size:17px;color:var(--teal-d);margin-bottom:6px;font-weight:600;}
+.email-box p{font-size:13px;color:var(--ink2);margin-bottom:14px;line-height:1.6;}
+.email-row{display:flex;gap:8px;flex-wrap:wrap;}
+.email-input{flex:1;min-width:200px;padding:11px 14px;background:var(--paper);border:1px solid var(--line2);border-radius:9px;font-family:'Inter',sans-serif;font-size:14px;color:var(--ink);outline:none;transition:border-color .15s;}
+.email-input:focus{border-color:var(--teal);}
+.email-input::placeholder{color:var(--faint);}
+.btn-send{padding:11px 20px;background:var(--teal);color:#fff;border:none;border-radius:9px;font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;}
+.btn-send:hover{background:var(--teal-d);}
+.email-ok{display:none;font-size:13px;color:var(--teal-d);font-weight:600;margin-top:8px;}
+.share-row{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 4px;}
+.share-btn{flex:1;min-width:150px;padding:13px 16px;border-radius:11px;border:1px solid var(--line2);background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.share-btn:hover{border-color:var(--teal-d);color:var(--teal-d);transform:translateY(-1px);}
+.share-btn.copied{border-color:var(--green);color:var(--green);}
+footer{padding:30px 0 10px;text-align:center;color:var(--mut);font-size:11px;border-top:1px solid var(--line);margin-top:40px;}
+footer .b{font-family:'JetBrains Mono',monospace;color:var(--teal);letter-spacing:2px;margin-bottom:6px;font-weight:700;}
+@media print{body::before,.prog,.btn,.email-box{display:none;}.q{break-inside:avoid;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><span class="dot"></span>RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div class="tg">FREE TOOL · AGENT TESTING</div>
+  <h1>Agent Testing Contract Checker</h1>
+  <p class="sub">8 questions that surface exactly where your AI agent's test coverage breaks down — and what to do about each gap before you ship to production.</p>
+</header>
+<p class="intro">Most agent failures in production were <b>testable before they happened</b> — but the tests didn't exist, weren't wired into CI, or only covered the happy path. This checker runs you through the 8 coverage contracts that separate robust agentic systems from ones that silently fail.</p>
+<div class="stats">
+  <div class="stat"><div class="n">8</div><div class="l">coverage contracts</div></div>
+  <div class="stat"><div class="n">~3min</div><div class="l">to your gap report</div></div>
+  <div class="stat"><div class="n">0</div><div class="l">accounts or sign-up</div></div>
+</div>
+<div class="prog"><div class="prog-bar"><div class="prog-fill" id="progFill"></div></div><div class="prog-txt" id="progTxt">0 / 8 answered</div></div>
+<div id="quiz"></div>
+<button class="btn" id="scoreBtn" disabled onclick="score()">Show my gap report →</button>
+<div class="result" id="result">
+  <div class="verdict-card" id="vcard">
+    <div class="r-score" id="rScore">—</div>
+    <div class="r-band" id="rBand"></div>
+    <div class="r-verdict" id="rVerdict"></div>
+  </div>
+  <div class="gap-list" id="gapList"></div>
+  <div class="share-row">
+    <button class="share-btn" onclick="copyResults(this)">📋 Copy results</button>
+    <button class="share-btn" onclick="window.print()">🖨️ Save as PDF</button>
+  </div>
+  <div class="email-box">
+    <h4>Get the full Agent Testing Playbook</h4>
+    <p>Rynaut's agent testing framework — contract templates, CI pipeline configs, and the full evaluation layer checklist. Free.</p>
+    <div class="email-row">
+      <input type="email" class="email-input" id="emailInput" placeholder="your@email.com" />
+      <button class="btn-send" onclick="submitEmail()">Send it →</button>
+    </div>
+    <div class="email-ok" id="emailOk">✓ You're in — check your inbox.</div>
+  </div>
+  <button class="btn reset" onclick="restart()">↩ Retake</button>
+</div>
+<footer><div class="b">RYNAUT · ARCHITECTING AUTOMATION</div><div>© 2025 Rynaut. Zero Blast Radius · Execution-Layer Architecture · Orchestrator Trust Surface</div></footer>
+</div>
+<script>
+const Qs=[
+  {domain:"OUTPUT CONTRACTS",text:"Do you have tests that verify your agent's output schema — structure, required fields, and data types — on every run?",why:"Unstructured agent outputs silently break downstream systems. Schema contracts are the first layer of any robust agent test suite.",fix:"<strong>Gap: Output Contract.</strong> Add a Pydantic model or JSON schema validator to assert output shape before any downstream step. Wire it into CI so contract breaks surface before deployment."},
+  {domain:"ERROR PATHS",text:"Do you test your agent's behaviour when an upstream tool or API call returns an error, timeout, or unexpected response?",why:"Agents that only see the happy path in tests fail unpredictably in production. Tool failure is a guaranteed production condition.",fix:"<strong>Gap: Error-Path Coverage.</strong> Write at least one test per tool call that simulates a failure. Verify the agent falls back gracefully instead of silently swallowing the error or retrying indefinitely."},
+  {domain:"HALLUCINATION",text:"Do you have a test that catches silent hallucinations — outputs that look valid but contain fabricated facts or references?",why:"LLMs can produce confident, well-structured responses that are entirely fabricated. Standard unit tests miss this entirely.",fix:"<strong>Gap: Hallucination Detection.</strong> Add a ground-truth assertion layer. For each key claim in the output, verify it against a known reference or use an LLM judge (Langfuse / DeepEval) with a factuality rubric."},
+  {domain:"ADVERSARIAL INPUTS",text:"Do your tests cover adversarial user input — prompt injection, jailbreak attempts, or unexpected format?",why:"Agents exposed to external input will encounter adversarial content. Untested adversarial paths are the most common source of critical production incidents.",fix:"<strong>Gap: Adversarial Input Coverage.</strong> Build a small adversarial test fixture: 5–10 known prompt injection patterns and boundary inputs. Assert the agent does not execute injected instructions."},
+  {domain:"CONTINUOUS EVAL",text:"Do you have evaluations that run on every commit — not just when you remember to run them manually?",why:"Manual evaluations quickly become stale. An agent that was safe last week can regress with a prompt change you didn't notice.",fix:"<strong>Gap: Continuous Evaluation (CI).</strong> Add an eval step to your CI pipeline. Even a 10-example eval that runs on every PR gives you regression detection. Use Langfuse datasets or DeepEval test cases."},
+  {domain:"INTEGRATION TESTS",text:"Do you test multi-step agent workflows end-to-end — not just individual tool calls or LLM calls in isolation?",why:"Individual tool tests pass while integrated workflows fail. State leakage, context window issues, and step-ordering bugs are invisible at the unit level.",fix:"<strong>Gap: Integration Coverage.</strong> Write at least one end-to-end test per major workflow path. Use LangGraph's checkpointer with an in-memory store in test mode to replay full agent runs deterministically."},
+  {domain:"DETERMINISTIC REPLAY",text:"Can you replay a failing agent run with the exact same state and inputs to reproduce and debug it?",why:"Non-reproducible failures are the most expensive bugs in agentic systems. Without replay, debugging is guesswork.",fix:"<strong>Gap: Deterministic Replay.</strong> Implement LangGraph's thread-level checkpointing with SQLite or in-memory persistence. Log all tool inputs/outputs with trace IDs so any run can be replayed from a snapshot."},
+  {domain:"COST & LATENCY",text:"Do you measure and assert on latency and token usage per agent run — with alerts when they exceed thresholds?",why:"Cost and latency regressions in agents are silent and compound. A prompt change that doubles token usage only shows up in your billing — not your tests.",fix:"<strong>Gap: Cost/Latency Contract.</strong> Add token-count and wall-clock time assertions to your eval suite. Instrument with Langfuse or LangSmith to track p95 latency and token spend per workflow."}
+];
+
+let ans=new Array(8).fill(null);
+
+function build(){
+  const el=document.getElementById('quiz');
+  el.innerHTML='';
+  Qs.forEach((q,i)=>{
+    el.innerHTML+=`
+    <div class="domain-tag">${q.domain}</div>
+    <div class="q" id="q${i}">
+      <div class="q-head"><div class="q-num">${i+1}</div><div class="q-text">${q.text}</div></div>
+      <div class="q-why">${q.why}</div>
+      <div class="opts">
+        <div class="opt yes" onclick="pick(${i},true,this)">✓ Yes</div>
+        <div class="opt no" onclick="pick(${i},false,this)">✗ No</div>
+      </div>
+    </div>`;
+  });
+}
+
+function pick(i,val,el){
+  ans[i]=val;
+  document.querySelectorAll(`#q${i} .opt`).forEach(o=>o.classList.remove('sel'));
+  el.classList.add('sel');
+  document.getElementById(`q${i}`).classList.add('answered');
+  const done=ans.filter(a=>a!==null).length;
+  document.getElementById('progFill').style.width=(done/8*100)+'%';
+  document.getElementById('progTxt').textContent=`${done} / 8 answered`;
+  document.getElementById('scoreBtn').disabled=done<8;
+}
+
+function score(){
+  const s=ans.filter(Boolean).length;
+  const r=document.getElementById('result');
+  r.classList.add('show');
+  r.scrollIntoView({behavior:'smooth',block:'start'});
+  const vc=document.getElementById('vcard');
+  document.getElementById('rScore').textContent=s+'/8';
+  let band,color,verdict;
+  if(s<=2){band='CRITICAL RISK';color='var(--red)';verdict='Your agent is running on trust, not tests. Production incidents are a matter of when, not if.';}
+  else if(s<=4){band='HIGH RISK';color='var(--amber)';verdict='Partial coverage with significant blind spots. Major failure modes are untested.';}
+  else if(s<=6){band='PARTIAL COVERAGE';color='var(--cyan)';verdict='Solid foundation, but gaps exist that will surface under production load.';}
+  else if(s<8){band='GOOD COVERAGE';color='var(--teal)';verdict='Strong test suite. Address remaining gaps to reach production-grade confidence.';}
+  else{band='SOLID COVERAGE';color='var(--teal-d)';verdict='Excellent. Your agent is tested to production-grade standards.';}
+  vc.style.setProperty('--vc-color',color);
+  document.getElementById('rBand').textContent=band;
+  document.getElementById('rBand').style.color=color;
+  document.getElementById('rScore').style.color=color;
+  document.getElementById('rVerdict').textContent=verdict;
+  const gl=document.getElementById('gapList');
+  gl.innerHTML='<h3 style="font-family:\'Fraunces\',serif;font-size:18px;margin-bottom:12px">Coverage Gap Analysis</h3>';
+  Qs.forEach((q,i)=>{
+    const passed=ans[i];
+    const div=document.createElement('div');
+    div.className='gap '+(passed?'pass':'fail');
+    div.innerHTML=`<div class="gap-head"><span class="gap-icon">${passed?'PASS':'GAP'}</span><span class="gap-title">${q.domain}</span></div><div class="gap-fix">${passed?'✓ Covered — no action needed.':q.fix}</div>`;
+    gl.appendChild(div);
+  });
+}
+
+function copyResults(){
+  const s=ans.filter(Boolean).length;
+  const gaps=Qs.map((q,i)=>ans[i]?null:`✗ ${q.domain}: ${q.fix.replace(/<[^>]+>/g,'')}`).filter(Boolean);
+  const txt=['AGENT TESTING CONTRACT CHECKER — Rynaut',`Score: ${s}/8`,'',...gaps,'','rynaut.com · Architecting Automation'].join('\n');
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=document.querySelector('.share-btn');
+    btn.textContent='✓ Copied!';btn.classList.add('copied');
+    setTimeout(()=>{btn.textContent='📋 Copy results';btn.classList.remove('copied');},2200);
+  });
+}
+
+function submitEmail(){
+  const v=document.getElementById('emailInput').value.trim();
+  if(!v||!v.includes('@')){document.getElementById('emailInput').style.borderColor='var(--red)';return;}
+  document.getElementById('emailInput').style.display='none';
+  document.querySelector('.btn-send').style.display='none';
+  document.getElementById('emailOk').style.display='block';
+}
+
+function restart(){
+  ans=new Array(8).fill(null);
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('progFill').style.width='0';
+  document.getElementById('progTxt').textContent='0 / 8 answered';
+  document.getElementById('scoreBtn').disabled=true;
+  build();window.scrollTo({top:0,behavior:'smooth'});
+}
+
+build();
+</script>
+</body>
+</html>

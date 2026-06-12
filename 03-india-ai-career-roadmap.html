@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India AI Architecture Career Roadmap — Rynaut</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F3F1EC;--paper:#FCFBF7;--ink:#1E2519;--ink2:#3F4A37;--mut:#6B7560;--faint:#9AA48F;
+  --line:#E3DFD4;--line2:#D3CDBF;
+  --teal:#13796B;--teal-d:#0E5A4F;--teal-bg:#E0EFEC;
+  --amber:#C2790F;--amber-bg:#FBEFD7;--red:#C2453E;
+  --green:#3A8B3F;--green-bg:#E6F2E4;--plum:#7A4B8C;--plum-bg:#F1E8F4;--cyan:#1487A0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 12% 0%,rgba(19,121,107,0.05),transparent 45%),radial-gradient(circle at 88% 100%,rgba(194,121,15,0.04),transparent 40%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 22px 90px;}
+header{padding:44px 0 24px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--teal);font-weight:700;margin-bottom:22px;}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);}
+.tg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:4px 11px;border-radius:20px;font-weight:700;background:var(--amber-bg);color:var(--amber);margin-bottom:16px;}
+h1{font-family:'Fraunces',serif;font-size:clamp(30px,5.5vw,48px);font-weight:600;letter-spacing:-0.5px;line-height:1.04;margin-bottom:14px;}
+.sub{font-size:15.5px;color:var(--ink2);max-width:640px;}
+.srcbar{margin-top:20px;padding:14px 18px;background:var(--paper);border:1px solid var(--line);border-radius:12px;font-size:12px;color:var(--mut);}
+.srcbar b{color:var(--teal-d);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;}
+.intro{font-size:15px;color:var(--ink2);margin:28px 0 20px;}
+.intro b{color:var(--ink);}
+.market{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px;margin-bottom:30px;}
+.mc{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:15px;}
+.mc .n{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--teal);line-height:1;}
+.mc .l{font-size:11px;color:var(--mut);margin-top:5px;line-height:1.4;}
+.form{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:26px;margin-bottom:24px;}
+.fld{margin-bottom:22px;}
+.fld:last-child{margin-bottom:0;}
+.fld label{display:block;font-size:13.5px;font-weight:600;margin-bottom:10px;color:var(--ink);}
+.fld .hint{font-size:11.5px;color:var(--faint);font-weight:500;margin-left:6px;}
+.chips{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{padding:10px 15px;background:var(--bg);border:1.5px solid var(--line2);border-radius:9px;font-size:13px;cursor:pointer;transition:all .15s;color:var(--ink2);}
+.chip:hover{border-color:var(--teal);}
+.chip.sel{border-color:var(--teal);background:var(--teal-bg);color:var(--teal-d);font-weight:600;}
+.range-wrap{display:flex;align-items:center;gap:16px;}
+input[type=range]{flex:1;accent-color:var(--teal);height:6px;}
+.range-val{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:700;color:var(--amber);min-width:72px;text-align:right;}
+.btn{display:block;width:100%;padding:17px;background:var(--teal);color:#fff;border:none;border-radius:12px;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .16s;box-shadow:0 6px 20px rgba(19,121,107,0.18);}
+.btn:hover{background:var(--teal-d);transform:translateY(-1px);box-shadow:0 10px 28px rgba(19,121,107,0.24);}
+.btn:disabled{background:var(--line2);color:var(--faint);cursor:not-allowed;transform:none;box-shadow:none;}
+.btn.sec{background:transparent;border:1.5px solid var(--line2);color:var(--ink2);margin-top:12px;box-shadow:none;}
+.btn.sec:hover{border-color:var(--teal);color:var(--teal-d);background:var(--paper);}
+.road{display:none;}
+.road.show{display:block;animation:rise .5s cubic-bezier(.2,.8,.2,1);}
+@keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+.r-banner{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px;margin-bottom:20px;box-shadow:0 12px 40px rgba(30,37,25,0.06);}
+.r-banner .pos{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--plum);margin-bottom:8px;font-weight:700;}
+.r-banner h2{font-family:'Fraunces',serif;font-size:24px;font-weight:600;margin-bottom:8px;}
+.r-banner .gap{font-size:13.5px;color:var(--ink2);line-height:1.6;}
+.r-banner .gap b{color:var(--ink);}
+.phase{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:12px;border-left:4px solid var(--accent);}
+.phase h3{font-family:'Fraunces',serif;font-size:17px;font-weight:600;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;}
+.phase h3 .t{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber);font-weight:700;}
+.phase .goal{font-size:13px;color:var(--mut);margin-bottom:14px;}
+.phase ul{list-style:none;}
+.phase li{font-size:13.5px;padding:6px 0 6px 20px;position:relative;color:var(--ink2);line-height:1.5;}
+.phase li::before{content:'';position:absolute;left:0;top:13px;width:7px;height:7px;border-radius:50%;background:var(--accent);}
+.phase li .why{color:var(--faint);font-size:12px;}
+.cta{margin-top:20px;padding:26px;background:linear-gradient(135deg,var(--teal-bg),var(--paper));border:1px solid var(--line);border-radius:16px;}
+.cta h4{font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:var(--teal-d);margin-bottom:10px;}
+.cta p{font-size:13.5px;color:var(--ink2);line-height:1.7;}
+.cta a{color:var(--teal-d);font-weight:600;}
+footer{padding:34px 0 10px;text-align:center;color:var(--mut);font-size:11px;border-top:1px solid var(--line);margin-top:44px;}
+footer .b{font-family:'JetBrains Mono',monospace;color:var(--teal-d);letter-spacing:3px;margin-bottom:7px;font-weight:700;}
+@media print{body{background:#fff;}body::before{display:none;}.form,.btn,.cta a{display:none;}.r-banner{box-shadow:none;}}
+.share-row{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 4px;}
+.share-btn{flex:1;min-width:150px;padding:14px 16px;border-radius:11px;border:1px solid var(--line2);background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.share-btn:hover{border-color:var(--teal-d);color:var(--teal-d);transform:translateY(-1px);}
+.share-btn.copied{border-color:var(--green);color:var(--green);}
+.share-note{font-size:11px;color:var(--mut);text-align:center;margin-top:8px;}
+@media print{.share-row,.share-note{display:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><span class="dot"></span>RYNAUT · ARCHITECTING AUTOMATION</div>
+  <span class="tg">$19 · INDIVIDUAL LICENSE</span>
+  <h1>India AI Architecture Career Roadmap</h1>
+  <p class="sub">Tell the tool where you are. It generates a phased, time-boxed roadmap from your current stack to an AI architecture role &mdash; built around the India market's actual demand signals, not generic Western career advice.</p>
+  <div class="srcbar"><b>DATA BASIS</b> &nbsp; Nasscom: AI demand to cross 1M roles by 2026, only ~16% AI-skilled &middot; Bain: 2.3M AI openings by 2027, openings 1.5&ndash;2&times; talent availability &middot; 44% of executives cite lack of in-house AI expertise as the top barrier to GenAI.</div>
+</header>
+
+<p class="intro">India's AI job openings are projected to run <b>1.5&ndash;2&times; the available talent</b> through 2027 (Bain). The constraint isn't demand &mdash; it's people who can architect AI systems, not just call an API. With <b>44% of executives</b> blaming a lack of in-house AI expertise for stalled GenAI, the engineers who can close that gap have outsized leverage. This tool maps your specific jump.</p>
+
+<div class="market">
+  <div class="mc"><div class="n">2.3M</div><div class="l">AI openings by 2027 (Bain)</div></div>
+  <div class="mc"><div class="n">1.5&ndash;2&times;</div><div class="l">openings vs talent supply</div></div>
+  <div class="mc"><div class="n">~16%</div><div class="l">currently AI-skilled</div></div>
+  <div class="mc"><div class="n">44%</div><div class="l">execs: lack in-house AI skill</div></div>
+</div>
+
+<div class="form" id="form">
+  <div class="fld">
+    <label>Your current role<span class="hint">&mdash; pick the closest</span></label>
+    <div class="chips" data-group="role">
+      <div class="chip" data-v="backend">Backend / API engineer</div>
+      <div class="chip" data-v="fullstack">Full-stack engineer</div>
+      <div class="chip" data-v="data">Data engineer / analyst</div>
+      <div class="chip" data-v="devops">DevOps / platform</div>
+      <div class="chip" data-v="lead">Tech lead / EM</div>
+    </div>
+  </div>
+  <div class="fld">
+    <label>Years of experience</label>
+    <div class="range-wrap"><input type="range" id="exp" min="0" max="15" value="4"><span class="range-val" id="expVal">4 yrs</span></div>
+  </div>
+  <div class="fld">
+    <label>What have you actually shipped with AI/LLMs?<span class="hint">&mdash; honest</span></label>
+    <div class="chips" data-group="ai">
+      <div class="chip" data-v="0">Nothing yet</div>
+      <div class="chip" data-v="1">Called an LLM API in a side project</div>
+      <div class="chip" data-v="2">Shipped a RAG / chatbot feature to prod</div>
+      <div class="chip" data-v="3">Built/owned an agentic system in prod</div>
+    </div>
+  </div>
+  <div class="fld">
+    <label>Target in 12 months</label>
+    <div class="chips" data-group="target">
+      <div class="chip" data-v="ic">Senior AI engineer (IC)</div>
+      <div class="chip" data-v="arch">AI / solutions architect</div>
+      <div class="chip" data-v="gcc">AI architect at a GCC</div>
+      <div class="chip" data-v="found">Independent / consulting</div>
+    </div>
+  </div>
+  <div class="fld">
+    <label>Hours/week you can invest</label>
+    <div class="range-wrap"><input type="range" id="hrs" min="2" max="20" value="8"><span class="range-val" id="hrsVal">8 hrs</span></div>
+  </div>
+  <button class="btn" id="genBtn" disabled onclick="generate()">Generate My Roadmap</button>
+</div>
+
+<div class="road" id="road">
+  <div class="r-banner">
+    <div class="pos" id="posLabel"></div>
+    <h2 id="roadTitle"></h2>
+    <div class="gap" id="gapLine"></div>
+  </div>
+  <div id="phases"></div>
+  <div class="cta">
+    <h4>Make it stick</h4>
+    <p>Print this roadmap (Ctrl/Cmd&nbsp;+&nbsp;P) and pin it. When you've shipped Phase 2, run the <a href="https://rynaut.github.io/free-tools/04-india-ai-talent-scorecard.html" target="_blank">India AI Talent Readiness Scorecard</a> &mdash; the one your future manager will score you against. Targeting a GCC? Pair it with Rynaut's <a href="https://rynaut.github.io/free-tools/06-gcc-ai-architecture-assessment.html" target="_blank">GCC AI Architecture Assessment</a> to understand what those 1,200+ AI-capable centres actually hire for.</p>
+  </div>
+  <div class="share-row">
+    <button class="share-btn" onclick="copyResult(this)">📋 Copy result summary</button>
+    <button class="share-btn" onclick="window.print()">⬇ Save as PDF</button>
+  </div>
+  <div class="share-note">Share your result in Slack, an email, or a post — or save it as a PDF to keep. Re-run anytime to track progress.</div>
+
+  <button class="btn sec" onclick="reset()">Adjust inputs &amp; regenerate</button>
+</div>
+
+<footer>
+  <div class="b">RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div>&copy; 2026 Rynaut. Licensed for individual use. Roadmap generated locally from Nasscom, Bain &amp; Indeed demand signals.</div>
+</footer>
+</div>
+
+<script>
+const state={role:null,ai:null,target:null,exp:4,hrs:8};
+document.querySelectorAll('.chips').forEach(g=>{
+  g.querySelectorAll('.chip').forEach(c=>{
+    c.onclick=function(){g.querySelectorAll('.chip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');state[g.dataset.group]=c.dataset.v;check();};
+  });
+});
+const expEl=document.getElementById('exp'),hrsEl=document.getElementById('hrs');
+expEl.oninput=function(){state.exp=+expEl.value;document.getElementById('expVal').textContent=expEl.value+' yrs';};
+hrsEl.oninput=function(){state.hrs=+hrsEl.value;document.getElementById('hrsVal').textContent=hrsEl.value+' hrs';};
+function check(){document.getElementById('genBtn').disabled=!(state.role&&state.ai!==null&&state.target);}
+const ROLE_NAME={backend:"Backend Engineer",fullstack:"Full-stack Engineer",data:"Data Engineer",devops:"DevOps Engineer",lead:"Tech Lead"};
+const TARGET_NAME={ic:"Senior AI Engineer",arch:"AI / Solutions Architect",gcc:"AI Architect (GCC track)",found:"Independent AI Consultant"};
+function generate(){
+  const ai=+state.ai;const pace=state.hrs;const fast=pace>=12,slow=pace<=5;
+  const tl=function(base){if(fast)return base;if(slow)return base.replace(/(\d+)/g,m=>Math.round(+m*1.6));return base.replace(/(\d+)/g,m=>Math.round(+m*1.2));};
+  document.getElementById('posLabel').textContent=ROLE_NAME[state.role]+' → '+TARGET_NAME[state.target];
+  document.getElementById('roadTitle').textContent='Your '+(fast?'accelerated':slow?'sustainable':'standard')+' path to AI architecture';
+  window._shareData={kind:'India AI Architecture Career Roadmap',line:ROLE_NAME[state.role]+' → '+TARGET_NAME[state.target]+' · '+(fast?'accelerated':slow?'sustainable':'standard')+' path'};
+  document.getElementById('gapLine').innerHTML='At <b>'+state.exp+' yrs</b> and <b>'+state.hrs+' hrs/week</b>, you have the engineering foundation but not yet the AI-architecture portfolio &mdash; the exact gap Bain says leaves openings running 1.5&ndash;2&times; ahead of talent. Here is the closing sequence.';
+  const phases=[];const colors=["var(--teal)","var(--cyan)","var(--amber)","var(--plum)"];
+  if(ai<=1){
+    phases.push({t:tl("Month 0–2"),title:"Phase 1 · Ship something real with an LLM",accent:colors[0],goal:"Close the credibility gap fast. Employers now hire on demonstrable skill — shipping beats certificates.",items:[
+      ["Build and deploy one RAG app on your own data","not a tutorial clone — your domain"],
+      ["Instrument tokens-per-request, latency, and cost","architects think in cost + SLAs from day one"],
+      ["Write up the architecture decisions publicly","Hashnode / LinkedIn — this becomes your portfolio"]
+    ]});
+  }else{
+    phases.push({t:tl("Month 0–1"),title:"Phase 1 · Convert experience into architecture language",accent:colors[0],goal:"You've shipped — now frame it as architecture, not just features.",items:[
+      ["Document one prod system as a diagram + ADRs","decisions, trade-offs, failure modes"],
+      ["Add eval + observability to something you run","this is the senior/architect dividing line"],
+      ["Publish a teardown of a hard decision you made","credibility compounds publicly"]
+    ]});
+  }
+  phases.push({t:tl("Month 2–4"),title:"Phase 2 · Build the architect's toolkit",accent:colors[1],goal:"Architecture is systems thinking under constraints. Learn the patterns that separate IC from architect.",items:[
+    ["Agentic patterns: orchestration, memory contracts, tool routing","the core of every 2026 AI role"],
+    ["Evaluation & guardrails: how you prove a system works","most engineers skip this — it's your edge"],
+    ["Cost & scaling architecture for LLM systems","caching, batching, model routing, fallbacks"],
+    ["One end-to-end agentic project with tests + eval harness","your flagship portfolio piece"]
+  ]});
+  if(state.target==="gcc"){
+    phases.push({t:tl("Month 4–7"),title:"Phase 3 · GCC-readiness layer",accent:colors[2],goal:"India's 2,117 GCCs (1,200+ already AI-capable) hire architects who speak compliance, scale, and stakeholders — not just code.",items:[
+      ["Compliance-aware design: residency, auditability, access","GCCs answer to global parent orgs"],
+      ["Reference-architecture fluency for non-engineers","the GCC architect's daily job"],
+      ["Shadow or run a mock system-design review","practise defending trade-offs out loud"]
+    ]});
+  }else if(state.target==="found"){
+    phases.push({t:tl("Month 4–7"),title:"Phase 3 · Productise your expertise",accent:colors[2],goal:"Consulting income comes from a sharp, named offer — not 'I do AI'.",items:[
+      ["Pick one vertical and one repeatable problem","narrow wins clients"],
+      ["Package a paid diagnostic as your front door","low-friction entry that proves value"],
+      ["Build a public body of work: writeups, tools, talks","inbound beats outbound for consultants"]
+    ]});
+  }else{
+    phases.push({t:tl("Month 4–7"),title:"Phase 3 · Architect-level depth",accent:colors[2],goal:"Move from 'can build it' to 'can design it for a team and defend the choices'.",items:[
+      ["Multi-system design: where your AI fits the platform","architects own seams, not just services"],
+      ["Reliability & failure isolation for AI systems","graceful degradation is an architect signal"],
+      ["Mentor or review someone else's AI work","teaching is the fastest route to senior signal"]
+    ]});
+  }
+  phases.push({t:tl("Month 7–12"),title:"Phase 4 · Convert to the role",accent:colors[3],goal:"Skills don't get you hired — proof and positioning do.",items:[
+    ["Rebuild your profile around AI-architecture outcomes","lead with shipped systems + metrics"],
+    ["Run the India AI Talent Readiness Scorecard on yourself","know your number before an interviewer assigns it"],
+    [state.target==='gcc'?"Target Bengaluru/Hyderabad GCCs and product cos":"Target companies with active AI platform teams","apply where the openings actually concentrate"]
+  ]});
+  document.getElementById('phases').innerHTML=phases.map(p=>
+    '<div class="phase" style="--accent:'+p.accent+'"><h3><span>'+p.title+'</span><span class="t">'+p.t+'</span></h3><div class="goal">'+p.goal+'</div><ul>'+p.items.map(i=>'<li>'+i[0]+' <span class="why">— '+i[1]+'</span></li>').join('')+'</ul></div>'
+  ).join('');
+  document.getElementById('form').style.display='none';
+  document.getElementById('road').classList.add('show');
+  document.getElementById('road').scrollIntoView({behavior:'smooth'});
+}
+  
+function copyResult(btn){
+  const d=window._shareData;if(!d)return;
+  const txt=d.kind.toUpperCase()+'\n'+d.line+'\n\nGenerated with Rynaut · Architecting Automation';
+  navigator.clipboard.writeText(txt).then(()=>{const o=btn.textContent;btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},1800);});
+}
+function reset(){document.getElementById('road').classList.remove('show');document.getElementById('form').style.display='block';window.scrollTo({top:0,behavior:'smooth'});}
+</script>
+</body>
+</html>

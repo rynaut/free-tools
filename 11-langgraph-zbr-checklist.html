@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LangGraph Zero Blast Radius Checklist — Rynaut</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F3F1EC;--paper:#FCFBF7;--ink:#1E2519;--ink2:#3F4A37;--mut:#6B7560;--faint:#9AA48F;
+  --line:#E3DFD4;--line2:#D3CDBF;
+  --teal:#13796B;--teal-d:#0E5A4F;--teal-bg:#E0EFEC;
+  --amber:#C2790F;--amber-bg:#FBEFD7;--red:#C2453E;--red-bg:#F7E4E2;
+  --green:#3A8B3F;--green-bg:#E6F2E4;--plum:#7A4B8C;--plum-bg:#F1E8F4;--cyan:#1487A0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 12% 0%,rgba(19,121,107,0.05),transparent 45%),radial-gradient(circle at 88% 100%,rgba(20,135,160,0.04),transparent 40%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:820px;margin:0 auto;padding:0 22px 90px;}
+header{padding:44px 0 24px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--teal);font-weight:700;margin-bottom:22px;}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);}
+.tg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:4px 11px;border-radius:20px;font-weight:700;background:var(--amber-bg);color:var(--amber);margin-bottom:16px;border:1px solid #E8D4A0;}
+h1{font-family:'Fraunces',serif;font-size:clamp(30px,5.5vw,46px);font-weight:600;letter-spacing:-0.5px;line-height:1.04;margin-bottom:14px;}
+.sub{font-size:15.5px;color:var(--ink2);max-width:620px;}
+.def-box{background:var(--amber-bg);border:1px solid #E8D4A0;border-left:3px solid var(--amber);border-radius:12px;padding:18px 22px;margin:24px 0;font-size:14px;color:var(--ink2);line-height:1.7;}
+.def-box b{color:var(--ink);}
+.def-box .term{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--amber);font-weight:700;letter-spacing:1px;}
+.prog{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 8px;margin-bottom:6px;display:flex;align-items:center;gap:14px;}
+.prog-bar{flex:1;height:5px;background:var(--line);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--teal),var(--cyan));width:0;transition:width .3s;border-radius:3px;}
+.prog-txt{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut);white-space:nowrap;letter-spacing:.5px;}
+.domain{margin-top:36px;}
+.domain-head{margin-bottom:14px;}
+.domain-tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--cyan);font-weight:700;text-transform:uppercase;margin-bottom:4px;}
+.domain-title{font-family:'Fraunces',serif;font-size:20px;font-weight:600;margin-bottom:4px;}
+.domain-sub{font-size:13.5px;color:var(--mut);}
+.check{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:16px 20px;margin-bottom:10px;cursor:pointer;transition:all .15s;display:flex;gap:14px;align-items:flex-start;}
+.check:hover{border-color:var(--teal);}
+.check.done{border-color:var(--teal);background:var(--teal-bg);}
+.check.done .cb{background:var(--teal);border-color:var(--teal);}
+.check.done .cb::after{content:'✓';color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;height:100%;}
+.check.done .c-title{text-decoration:line-through;color:var(--mut);}
+.cb{width:22px;height:22px;border-radius:6px;border:2px solid var(--line2);flex-shrink:0;margin-top:2px;transition:all .15s;}
+.c-body{flex:1;}
+.c-title{font-size:14px;font-weight:600;margin-bottom:4px;line-height:1.45;}
+.c-desc{font-size:13px;color:var(--mut);line-height:1.6;}
+.c-code{font-family:'JetBrains Mono',monospace;background:var(--bg);color:var(--teal-d);padding:3px 8px;border-radius:5px;font-size:11px;display:inline-block;margin-top:6px;border:1px solid var(--line);}
+.risk{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:6px;letter-spacing:.5px;}
+.risk-c{background:var(--red-bg);color:var(--red);}
+.risk-h{background:var(--amber-bg);color:var(--amber);}
+.risk-m{background:var(--teal-bg);color:var(--teal-d);}
+.actions{display:flex;gap:10px;margin-top:32px;flex-wrap:wrap;}
+.btn{padding:13px 22px;border-radius:11px;border:none;font-family:'Inter',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .15s;}
+.btn-primary{background:var(--teal);color:#fff;}
+.btn-primary:hover{background:var(--teal-d);}
+.btn-ghost{background:transparent;border:1px solid var(--line2);color:var(--mut);}
+.btn-ghost:hover{border-color:var(--red);color:var(--red);}
+footer{padding:30px 0 10px;text-align:center;color:var(--mut);font-size:11px;border-top:1px solid var(--line);margin-top:40px;}
+footer .b{font-family:'JetBrains Mono',monospace;color:var(--teal);letter-spacing:2px;margin-bottom:6px;font-weight:700;}
+@media print{body::before,.prog,.actions{display:none;}.check{break-inside:avoid;}body{background:white;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><span class="dot"></span>RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div class="tg">$19 · AGENTIC SYSTEMS AUDIT</div>
+  <h1>LangGraph Zero Blast Radius Checklist</h1>
+  <p class="sub">The 5-domain, 25-point audit every production LangGraph system must pass before going live. Click to check off. Export as PDF for your deployment gate.</p>
+</header>
+<div class="def-box">
+  <span class="term">ZERO BLAST RADIUS</span><br>
+  <b>A Rynaut architecture principle:</b> design every agentic system so that the worst-case failure leaves the smallest possible footprint. A ZBR system cannot silently corrupt data, cannot loop indefinitely, and cannot act on bad state without a human checkpoint. This checklist is your pre-deployment audit gate.
+</div>
+<div class="prog">
+  <div class="prog-bar"><div class="prog-fill" id="progFill"></div></div>
+  <div class="prog-txt" id="progTxt">0 / 25 checked</div>
+</div>
+<div id="checklist"></div>
+<div class="actions">
+  <button class="btn btn-primary" onclick="window.print()">🖨️ Export as PDF</button>
+  <button class="btn btn-ghost" onclick="resetAll()">↩ Reset</button>
+</div>
+<footer><div class="b">RYNAUT · ARCHITECTING AUTOMATION</div><div>© 2025 Rynaut · Companion to the BadHost video series · rynaut.com</div></footer>
+</div>
+<script>
+const DOMAINS=[
+  {tag:"DOMAIN 01",title:"State Isolation & Corruption Prevention",sub:"The most common production failure: agents reading or writing shared state they shouldn't touch.",checks:[
+    {t:"Each node only reads state keys it explicitly declares as input",d:"Nodes that read the full state object are a blast radius amplifier. Narrow the input schema per node so a corrupt key in one branch can't poison another.",r:"c"},
+    {t:"State updates use typed reducers — no raw dict mutations",d:"Raw dict mutations bypass LangGraph's state management and create race conditions in parallel branches. Use TypedDict + reducer functions.",r:"c"},
+    {t:"Parallel branches operate on independent state slices — no shared write keys",d:"When two branches write the same key, last-write wins silently. Map distinct output keys per branch and merge explicitly at the join node.",r:"c"},
+    {t:"State schema is versioned and validated on every graph entry",d:"As graphs evolve, old persisted state can be loaded with a schema mismatch. Validate state shape on load with Pydantic.",r:"h"},
+    {t:"Sensitive state (keys, tokens, PII) is masked in all logs and traces",d:"LangGraph checkpointers and LangSmith traces capture full state by default. Add a state sanitizer before any persistence layer.",r:"h"},
+  ]},
+  {tag:"DOMAIN 02",title:"Loop Prevention & Termination Guarantees",sub:"Infinite loops burn tokens, time, and API budgets with no output — the most costly production failure mode.",checks:[
+    {t:"Every graph has a hard max_iterations limit that terminates execution unconditionally",d:"Never rely on the agent deciding to stop.",code:"graph.invoke(state, config={'recursion_limit': 25})",r:"c"},
+    {t:"Conditional edges have an explicit fallback — no infinite 'retry same node' loops",d:"Edge conditions that can return the same node indefinitely are a loop bomb. Every conditional edge must have a terminal branch.",r:"c"},
+    {t:"Retry logic uses exponential backoff with a max_retries cap",d:"Tool call retries without backoff turn transient API failures into runaway loops. Cap retries at 3 and surface failures explicitly.",r:"h"},
+    {t:"Token budget is tracked and enforced per workflow run",d:"Set a max token budget per run. Terminate and return a partial result when the budget is reached.",r:"h"},
+    {t:"Wall-clock timeout is enforced at the workflow level — not just per tool call",d:"Individual timeouts don't prevent slow multi-step accumulation. Add an asyncio timeout around the full graph.invoke call.",r:"m"},
+  ]},
+  {tag:"DOMAIN 03",title:"Human-in-the-Loop Checkpoint Design",sub:"HITL is the primary blast radius control for high-consequence actions in production agents.",checks:[
+    {t:"Every irreversible action has a HITL checkpoint before execution",d:"Irreversible = sends email, modifies database, makes API call with side effects, deploys code.",code:"interrupt_before=['send_email', 'write_db']",r:"c"},
+    {t:"Interrupt state is persisted — humans can review and resume hours later",d:"In-memory interrupts are lost on process restart. Use the PostgreSQL or SQLite checkpointer so interrupted runs survive restarts.",r:"h"},
+    {t:"HITL approval surfaces the full action plan — not just the next step",d:"Users approving a single step in a 10-step plan are not giving meaningful consent. Show the full planned action list at each checkpoint.",r:"h"},
+    {t:"Timeout on pending HITL approval triggers a safe abort — not a default approval",d:"If no human approves within N minutes, the system must fail safe — not assume approval. Default must always be no-action.",r:"c"},
+    {t:"All HITL decisions are logged with timestamp, approver identity, and action taken",d:"Audit trail for HITL events is required for compliance and incident investigation.",r:"m"},
+  ]},
+  {tag:"DOMAIN 04",title:"Tool Call Safety & Error Containment",sub:"Every tool call is an external interaction and a blast radius vector. Contain failures at the tool boundary.",checks:[
+    {t:"All tools have input validation before execution — not just LLM-side schema",d:"LLMs generate plausible-looking inputs that fail runtime validation. Validate in the tool wrapper itself.",r:"c"},
+    {t:"Tool errors return structured error objects — they do not raise exceptions into the graph",d:"Unhandled tool exceptions propagate to the LLM context and often cause hallucinated recovery. Return {error, recoverable} instead.",r:"h"},
+    {t:"Tools with write side-effects are idempotent — safe to retry without duplication",d:"When a tool call times out, the agent may retry. If the tool already executed, a retry creates duplicate writes. Use idempotency keys.",r:"h"},
+    {t:"No tool has access to resources broader than the minimum required for its job",d:"Principle of least privilege at the tool level. Scope API keys to the minimum required operation.",r:"h"},
+    {t:"Tool call rate limits are enforced at the agent level — not just the API level",d:"API-level rate limits cause retries and delays. Enforce limits in the agent so it degrades gracefully.",r:"m"},
+  ]},
+  {tag:"DOMAIN 05",title:"Observability & Recovery Readiness",sub:"A production agent you can't observe is one you can't fix. Observability is the recovery path.",checks:[
+    {t:"Every graph run has a unique trace ID propagated through all nodes and tool calls",d:"Without trace IDs, correlating failures across distributed logs is impossible. Inject a trace ID at graph entry and pass it through state.",r:"c"},
+    {t:"Failed runs produce a structured failure report — not just a stack trace",d:"Include: which node failed, what state it received, what tool call was in flight, and the last successful checkpoint.",r:"c"},
+    {t:"Any failed run can be replayed from the last successful checkpoint",d:"Use LangGraph's built-in checkpointer. On failure, surface the thread_id and checkpoint_id so engineers can replay in debug mode.",code:"graph.invoke(None, config={'configurable': {'thread_id': id}})",r:"h"},
+    {t:"Latency and token usage are tracked per node — not just per full run",d:"Full-run metrics hide which node is the bottleneck. Instrument at the node level with LangSmith or Langfuse spans.",r:"m"},
+    {t:"Runbook exists: on-call engineer can identify, isolate, and rollback a misbehaving agent in under 15 minutes",d:"The final ZBR test: can a human close the blast radius fast? If there's no documented recovery procedure, the blast radius is unbounded.",r:"h"},
+  ]},
+];
+
+const RISK={c:'CRITICAL',h:'HIGH',m:'MEDIUM'};
+const RCLS={c:'risk-c',h:'risk-h',m:'risk-m'};
+let total=0;
+
+function build(){
+  const el=document.getElementById('checklist');
+  el.innerHTML='';
+  DOMAINS.forEach((d,di)=>{
+    total+=d.checks.length;
+    let html=`<div class="domain"><div class="domain-head"><div class="domain-tag">${d.tag}</div><div class="domain-title">${d.title}</div><div class="domain-sub">${d.sub}</div></div>`;
+    d.checks.forEach((c,ci)=>{
+      const id=`c-${di}-${ci}`;
+      html+=`<div class="check" id="${id}" onclick="toggle('${id}')">
+        <div class="cb"></div>
+        <div class="c-body">
+          <div class="c-title">${c.t}</div>
+          <div class="c-desc">${c.d}</div>
+          ${c.code?`<code class="c-code">${c.code}</code>`:''}
+          <div><span class="risk ${RCLS[c.r]}">${RISK[c.r]}</span></div>
+        </div>
+      </div>`;
+    });
+    html+='</div>';
+    el.innerHTML+=html;
+  });
+  updateProg();
+}
+
+function toggle(id){
+  document.getElementById(id).classList.toggle('done');
+  updateProg();
+}
+
+function updateProg(){
+  const done=document.querySelectorAll('.check.done').length;
+  const all=document.querySelectorAll('.check').length;
+  document.getElementById('progFill').style.width=(done/all*100)+'%';
+  document.getElementById('progTxt').textContent=`${done} / ${all} checked`;
+  if(done===all)document.getElementById('progTxt').style.color='var(--teal-d)';
+}
+
+function resetAll(){
+  document.querySelectorAll('.check.done').forEach(el=>el.classList.remove('done'));
+  updateProg();
+  document.getElementById('progTxt').style.color='var(--mut)';
+}
+
+build();
+</script>
+</body>
+</html>

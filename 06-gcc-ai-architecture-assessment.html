@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCC AI Architecture Assessment — Rynaut</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F2F0F6;--paper:#FBFAFD;--ink:#221C33;--ink2:#42395A;--mut:#6E6685;--faint:#9C95B0;
+  --line:#E4DFEC;--line2:#D4CDE0;
+  --plum:#6B4E9E;--plum-d:#503A7A;--plum-bg:#ECE5F5;
+  --teal:#0E7C8C;--teal-bg:#E0F0F2;--amber:#C77E1A;--amber-bg:#FBF0DD;
+  --red:#C2453E;--red-bg:#FBE6E3;--green:#2E8B5F;--green-bg:#E4F2EA;--cyan:#1E88A8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 12% 0%,rgba(107,78,158,0.06),transparent 45%),radial-gradient(circle at 88% 95%,rgba(30,136,168,0.04),transparent 42%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding:0 22px 90px;}
+header{padding:44px 0 24px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--plum);font-weight:700;margin-bottom:22px;}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--plum);}
+.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.tg{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:4px 11px;border-radius:20px;font-weight:700;}
+.tg-price{background:var(--amber-bg);color:var(--amber);}
+.tg-ent{background:var(--teal-bg);color:var(--teal);}
+h1{font-family:'Fraunces',serif;font-size:clamp(30px,5.5vw,48px);font-weight:600;letter-spacing:-0.5px;line-height:1.04;margin-bottom:14px;}
+.sub{font-size:15.5px;color:var(--ink2);max-width:680px;}
+.srcbar{margin-top:20px;padding:14px 18px;background:var(--paper);border:1px solid var(--line);border-radius:12px;font-size:12px;color:var(--mut);}
+.srcbar b{color:var(--plum-d);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;}
+.intro{font-size:15px;color:var(--ink2);margin:28px 0 20px;}
+.intro b{color:var(--ink);}
+.market{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px;margin-bottom:32px;}
+.mc{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:15px;}
+.mc .n{font-family:'Fraunces',serif;font-size:23px;font-weight:600;color:var(--plum);line-height:1;}
+.mc .l{font-size:11px;color:var(--mut);margin-top:5px;line-height:1.4;}
+.meta-form{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px;margin-bottom:22px;display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.fld label{display:block;font-size:12px;font-weight:600;margin-bottom:8px;color:var(--mut);}
+.fld input,.fld select{width:100%;padding:11px 13px;background:var(--bg);border:1.5px solid var(--line2);border-radius:9px;color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;}
+.fld input:focus,.fld select:focus{outline:none;border-color:var(--plum);}
+.dimblock{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:12px;}
+.dimblock h3{font-size:16px;font-weight:700;margin-bottom:4px;display:flex;align-items:center;gap:11px;}
+.dimblock h3 .dn{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--plum);background:var(--plum-bg);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;}
+.dimblock .dd{font-size:13px;color:var(--mut);margin-bottom:14px;}
+.levels{display:grid;gap:8px;}
+.lvl-opt{display:flex;gap:12px;padding:12px 14px;background:var(--bg);border:1.5px solid var(--line2);border-radius:9px;cursor:pointer;transition:all .15s;align-items:flex-start;}
+.lvl-opt:hover{border-color:var(--plum);}
+.lvl-opt.sel{border-color:var(--plum);background:var(--plum-bg);}
+.lvl-opt .ln{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:700;color:var(--plum);min-width:20px;}
+.lvl-opt .lt{font-size:12.5px;line-height:1.5;color:var(--ink2);}
+.btn{display:block;width:100%;padding:17px;background:var(--plum);color:#fff;border:none;border-radius:12px;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .16s;margin-top:10px;box-shadow:0 6px 20px rgba(107,78,158,0.2);}
+.btn:hover{background:var(--plum-d);transform:translateY(-1px);box-shadow:0 10px 28px rgba(107,78,158,0.26);}
+.btn:disabled{background:var(--line2);color:var(--faint);cursor:not-allowed;transform:none;box-shadow:none;}
+.btn.sec{background:transparent;border:1.5px solid var(--line2);color:var(--ink2);box-shadow:none;}
+.btn.sec:hover{border-color:var(--plum);color:var(--plum-d);background:var(--paper);}
+.prog{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--mut);text-align:center;margin:16px 0;letter-spacing:1px;}
+.result{display:none;margin-top:30px;}
+.result.show{display:block;animation:rise .5s cubic-bezier(.2,.8,.2,1);}
+@keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+.report-head{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:32px;margin-bottom:18px;box-shadow:0 12px 40px rgba(34,28,51,0.06);}
+.rh-org{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--mut);letter-spacing:2px;margin-bottom:14px;}
+.rh-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+.rh-score .big{font-family:'Fraunces',serif;font-size:70px;font-weight:600;line-height:1;}
+.rh-score .stage{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:1.5px;font-weight:700;margin-top:6px;}
+.peer{text-align:right;font-size:12px;color:var(--mut);}
+.peer b{display:block;font-family:'Fraunces',serif;font-size:30px;color:var(--amber);font-weight:600;}
+.rh-summary{font-size:14px;color:var(--ink2);line-height:1.7;margin-top:20px;border-top:1px solid var(--line);padding-top:18px;}
+.dimscore{display:flex;flex-direction:column;gap:9px;margin:18px 0;}
+.ds-row{display:grid;grid-template-columns:190px 1fr auto;gap:14px;align-items:center;font-size:12px;}
+.ds-row .nm{font-weight:600;color:var(--ink);}
+.ds-bar{height:24px;background:var(--line);border-radius:7px;overflow:hidden;position:relative;}
+.ds-fill{height:100%;border-radius:7px;width:0;transition:width .9s cubic-bezier(.2,.8,.2,1);}
+.ds-peer-mark{position:absolute;top:-3px;bottom:-3px;width:2.5px;background:var(--amber);border-radius:2px;}
+.ds-val{font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right;min-width:62px;}
+.legend{font-size:11px;color:var(--mut);text-align:center;margin-bottom:18px;}
+.legend .m{color:var(--amber);font-weight:700;}
+.block{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:16px;}
+.block h3{font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin-bottom:14px;color:var(--ink);}
+.horizon{padding:14px 0;border-top:1px solid var(--line);}
+.horizon:first-of-type{border-top:none;padding-top:0;}
+.horizon .ht{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--plum);letter-spacing:1px;margin-bottom:6px;font-weight:700;}
+.horizon .hi{font-size:13.5px;line-height:1.65;color:var(--ink2);}
+.horizon .hi b{color:var(--ink);}
+.value-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:14px;}
+.vg{text-align:center;background:var(--bg);border:1px solid var(--line);border-radius:11px;padding:16px;}
+.vg .n{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:var(--cyan);line-height:1;}
+.vg .l{font-size:11px;color:var(--mut);margin-top:6px;line-height:1.4;}
+.cta{padding:26px;background:linear-gradient(135deg,var(--plum-bg),var(--paper));border:1px solid var(--line);border-radius:16px;}
+.cta h4{font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:var(--plum-d);margin-bottom:10px;}
+.cta p{font-size:13.5px;color:var(--ink2);line-height:1.7;}
+.cta a{color:var(--plum-d);font-weight:600;}
+.disclaimer{font-size:11px;color:var(--faint);margin-top:14px;line-height:1.5;}
+footer{padding:34px 0 10px;text-align:center;color:var(--mut);font-size:11px;border-top:1px solid var(--line);margin-top:44px;}
+footer .b{font-family:'JetBrains Mono',monospace;color:var(--plum-d);letter-spacing:3px;margin-bottom:7px;font-weight:700;}
+@media print{body{background:#fff;}body::before{display:none;}.btn,.cta a{display:none;}.report-head{box-shadow:none;}}
+@media(max-width:600px){.meta-form{grid-template-columns:1fr;}.ds-row{grid-template-columns:110px 1fr auto;}}
+.share-row{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 4px;}
+.share-btn{flex:1;min-width:150px;padding:14px 16px;border-radius:11px;border:1px solid var(--line2);background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.share-btn:hover{border-color:var(--plum-d);color:var(--plum-d);transform:translateY(-1px);}
+.share-btn.copied{border-color:var(--green);color:var(--green);}
+.share-note{font-size:11px;color:var(--mut);text-align:center;margin-top:8px;}
+/* PDF modal */
+.pdf-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(34,28,51,0.6);align-items:center;justify-content:center;}
+.pdf-overlay.open{display:flex;}
+.pdf-modal{background:#fff;border-radius:18px;width:740px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,0.25);}
+.rpt{font-family:'Inter',sans-serif;padding:48px 52px;color:#221C33;line-height:1.6;}
+.rpt-brand{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;color:#6B4E9E;font-weight:700;margin-bottom:18px;}
+.rpt-cover{padding-bottom:28px;border-bottom:2px solid #6B4E9E;margin-bottom:28px;}
+.rpt-title{font-family:'Fraunces',serif;font-size:26px;font-weight:600;margin-bottom:6px;}
+.rpt-meta{font-size:12px;color:#6E6685;margin-bottom:16px;}
+.rpt-score-row{display:flex;align-items:baseline;gap:14px;margin-bottom:10px;}
+.rpt-score{font-family:'Fraunces',serif;font-size:60px;font-weight:600;line-height:1;}
+.rpt-stage{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:2px;font-weight:700;}
+.rpt-bench-row{display:flex;gap:14px;margin:14px 0;flex-wrap:wrap;}
+.rpt-bv{text-align:center;background:#f5f3fa;border:1px solid #E4DFEC;border-radius:10px;padding:10px 16px;flex:1;min-width:100px;}
+.rpt-bv .bn{font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:#C77E1A;}
+.rpt-bv .bl{font-size:10px;color:#6E6685;margin-top:2px;}
+.rpt-summary{font-size:12.5px;color:#42395A;line-height:1.65;margin-top:14px;padding:12px 14px;background:#f0ecf8;border-left:3px solid #6B4E9E;border-radius:0 8px 8px 0;}
+.rpt-h2{font-family:'Fraunces',serif;font-size:16px;font-weight:600;color:#221C33;margin:24px 0 12px;padding-bottom:8px;border-bottom:1px solid #E4DFEC;}
+.rpt-dim-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #f0ecf8;font-size:12px;}
+.rpt-dim-row:last-child{border-bottom:none;}
+.rpt-dim-name{width:170px;font-weight:600;flex-shrink:0;}
+.rpt-dim-bar{flex:1;height:14px;background:#EDE9F4;border-radius:4px;overflow:hidden;position:relative;}
+.rpt-dim-fill{height:100%;border-radius:4px;}
+.rpt-dim-peer{position:absolute;top:0;bottom:0;width:2px;background:#C77E1A;}
+.rpt-dim-val{width:48px;text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;}
+.rpt-h3{display:flex;align-items:center;gap:8px;margin:20px 0 10px;font-size:13px;font-weight:700;color:#221C33;}
+.rpt-horizon{padding:10px 0;border-bottom:1px solid #f0ecf8;font-size:12px;}
+.rpt-horizon:last-child{border-bottom:none;}
+.rpt-ht{font-family:'JetBrains Mono',monospace;font-size:10px;color:#6B4E9E;letter-spacing:1px;margin-bottom:4px;font-weight:700;}
+.rpt-vg{display:flex;gap:12px;flex-wrap:wrap;margin:10px 0;}
+.rpt-vgc{text-align:center;background:#f5f3fa;border:1px solid #E4DFEC;border-radius:8px;padding:10px 14px;flex:1;min-width:80px;}
+.rpt-vgc .bn{font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:#1E88A8;}
+.rpt-vgc .bl{font-size:10px;color:#6E6685;margin-top:2px;}
+.rpt-footer{margin-top:28px;padding-top:14px;border-top:1px solid #E4DFEC;display:flex;justify-content:space-between;font-size:10px;color:#9C95B0;font-family:'JetBrains Mono',monospace;}
+.rpt-print-btn{display:block;width:100%;padding:15px;background:#6B4E9E;color:#fff;border:none;border-radius:0 0 18px 18px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;}
+.rpt-print-btn:hover{background:#503A7A;}
+.rpt-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:#6E6685;line-height:1;padding:4px;}
+@media print{.share-row,.share-note,.pdf-overlay{display:none;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><span class="dot"></span>RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div class="tagrow">
+    <span class="tg tg-price">$99&ndash;499 · ORG LICENSE</span>
+    <span class="tg tg-ent">GCC EDITION</span>
+  </div>
+  <h1>GCC AI Architecture Assessment</h1>
+  <p class="sub">A board-ready AI-maturity assessment built for India's Global Capability Centres. Benchmark your AI architecture across seven enterprise dimensions, see where you sit against the FY26 GCC peer cohort, and leave with a three-horizon roadmap your global parent's leadership will recognise.</p>
+  <div class="srcbar"><b>DATA BASIS</b> &nbsp; Zinnov&ndash;Nasscom GCC Value Orbit (FY26, Mar 2026) &middot; maturity stages aligned to the Zinnov GCC Maturity Framework &middot; peer benchmarks derived from the 2,117-GCC dataset. Directional benchmarking for internal planning.</div>
+</header>
+
+<p class="intro">India now hosts <b>2,117 GCCs across 3,728 units</b>, generating <b>$98.4B</b> and employing <b>2.36M</b> people &mdash; and the country is the <b>#1 AI hiring market globally</b>. Over <b>1,200 of those GCCs already have AI/ML capability</b>. The bar has moved: <b>96% of GCCs set up since FY21 launched with a product or portfolio mandate from day one</b> — the old crawl-walk-run model is dead. Every parent org is now asking the same question: is our India centre an AI <i>leader</i> or a lagging cost centre? This assessment produces the artifact that conversation needs &mdash; a defensible maturity score, a peer benchmark, and a phased roadmap.</p>
+
+<div class="market">
+  <div class="mc"><div class="n">2,117</div><div class="l">GCCs in India (FY26)</div></div>
+  <div class="mc"><div class="n">1,200+</div><div class="l">with AI/ML capability</div></div>
+  <div class="mc"><div class="n">#1</div><div class="l">AI hiring market globally</div></div>
+  <div class="mc"><div class="n">~100+</div><div class="l">new GCCs added in FY26</div></div>
+  <div class="mc"><div class="n">75%</div><div class="l">could reach high maturity by 2030</div></div>
+</div>
+
+<div class="meta-form">
+  <div class="fld"><label>GCC / Org name (appears on the report)</label><input type="text" id="orgName" placeholder="e.g. Acme India GCC" oninput="checkReady()"></div>
+  <div class="fld"><label>Headcount band</label><select id="size" onchange="checkReady()"><option value="">Select&hellip;</option><option>&lt; 500</option><option>500&ndash;2,000</option><option>2,000&ndash;5,000</option><option>5,000+</option></select></div>
+  <div class="fld"><label>Parent industry</label><select id="industry" onchange="checkReady()"><option value="">Select&hellip;</option><option>Technology / SaaS</option><option>BFSI</option><option>Healthcare / Pharma</option><option>Retail / CPG</option><option>Manufacturing</option><option>Other</option></select></div>
+  <div class="fld"><label>Years operating in India</label><select id="age" onchange="checkReady()"><option value="">Select&hellip;</option><option>&lt; 2 (new entrant)</option><option>2&ndash;5</option><option>5&ndash;10</option><option>10+</option></select></div>
+</div>
+
+<div id="dims"></div>
+
+<div class="prog" id="prog">0 / 7 dimensions assessed</div>
+<button class="btn" id="calcBtn" disabled onclick="calc()">Generate Maturity Assessment</button>
+
+<div class="result" id="result">
+  <div class="report-head">
+    <div class="rh-org" id="rhOrg"></div>
+    <div class="rh-top">
+      <div class="rh-score"><div class="big" id="bigScore">&mdash;</div><div class="stage" id="stage"></div></div>
+      <div class="peer"><b id="peerVal">&mdash;</b>GCC cohort median</div>
+    </div>
+    <div class="rh-summary" id="summary"></div>
+  </div>
+  <div class="legend">Bars show your maturity per dimension &middot; <span class="m">amber marker</span> = GCC peer median (FY26 cohort)</div>
+  <div class="dimscore" id="dimScore"></div>
+  <div class="block">
+    <h3>Estimated value at stake &mdash; closing to peer median</h3>
+    <div class="value-grid" id="valueGrid"></div>
+  </div>
+  <div class="block">
+    <h3>Board-ready roadmap &mdash; three horizons</h3>
+    <div id="horizons"></div>
+  </div>
+  <div class="cta">
+    <h4>From assessment to execution</h4>
+    <p id="ctaText"></p>
+    <div class="disclaimer">Benchmarks are directional, derived from public FY26 GCC-ecosystem data, and intended to support internal planning. Value-at-stake figures are illustrative estimates, not financial guarantees. Not a substitute for a formal engagement.</div>
+  </div>
+  <div class="share-row">
+    <button class="share-btn" onclick="copyResult(this)">📋 Copy result summary</button>
+    <button class="share-btn" onclick="openReport()">📄 Download PDF report</button>
+  </div>
+  <div class="share-note">The PDF report is board-ready — use it directly in your leadership deck or forward to your global parent's AI leadership.</div>
+
+  <button class="btn sec" style="margin-top:16px;" onclick="reset()">Re-assess</button>
+</div>
+
+<!-- PDF Modal -->
+<div class="pdf-overlay" id="pdfOverlay" onclick="if(event.target===this)closeReport()">
+  <div class="pdf-modal">
+    <div class="rpt" id="rptContent"></div>
+    <button class="rpt-print-btn" onclick="window.print()">⬇ Print / Save as PDF &nbsp;(Ctrl+P)</button>
+  </div>
+</div>
+
+<footer>
+  <div class="b">RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div>&copy; 2026 Rynaut. Org license. Assessment runs entirely in your browser.</div>
+</footer>
+</div>
+
+<script>
+const DIMS=[
+  {name:"AI Strategy & Mandate",d:"Is AI a parent-aligned, funded mandate — or scattered experiments?",
+   levels:["Opportunistic pilots, no mandate","Stated intent, unfunded","Funded mandate, partial alignment","Parent-aligned charter with budget","AI is core to the GCC's value proposition"],peer:2.6},
+  {name:"Platform & Architecture",d:"A reusable AI platform vs one-off builds per team.",
+   levels:["Every team builds from scratch","Some shared components","Emerging internal platform","Governed AI platform in use","Self-service platform with internal products"],peer:2.2},
+  {name:"Data Foundation",d:"Is data discoverable, governed, and AI-ready across the org?",
+   levels:["Siloed, ungoverned","Some catalogs exist","Governed in pockets","Enterprise data governance","AI-ready data products org-wide"],peer:2.4},
+  {name:"MLOps / LLMOps",d:"How AI systems are deployed, evaluated, and monitored in production.",
+   levels:["Manual, no evaluation","Basic CI/CD","Some eval + monitoring","Full LLMOps with eval gates","Automated, drift-aware operations"],peer:2.1},
+  {name:"Governance & Risk",d:"Responsible-AI controls, compliance, and auditability.",
+   levels:["None","Awareness only","Policies drafted","Enforced governance","Audit-ready, board-reported"],peer:2.3},
+  {name:"Talent & Operating Model",d:"AI-ready talent depth and how AI work is organised.",
+   levels:["A few skilled individuals","Pockets of capability","Defined AI roles","CoE / platform team in place","AI fluency across the org"],peer:2.5},
+  {name:"Value Realisation",d:"Are AI initiatives tied to measured business outcomes?",
+   levels:["No measurement","Anecdotal","Some KPIs tracked","Outcomes measured & reported","Value drives the AI portfolio"],peer:2.0}
+];
+const answers={};
+function renderDims(){
+  document.getElementById('dims').innerHTML=DIMS.map((d,i)=>
+    '<div class="dimblock"><h3><span class="dn">'+(i+1)+'</span>'+d.name+'</h3><div class="dd">'+d.d+'</div><div class="levels">'+d.levels.map((l,j)=>
+      '<div class="lvl-opt" onclick="pick('+i+','+j+',this)"><span class="ln">L'+(j+1)+'</span><span class="lt">'+l+'</span></div>').join('')+'</div></div>'
+  ).join('');
+}
+function pick(i,j,el){
+  answers[i]=j;
+  el.parentElement.querySelectorAll('.lvl-opt').forEach(x=>x.classList.remove('sel'));el.classList.add('sel');
+  document.getElementById('prog').textContent=Object.keys(answers).length+' / '+DIMS.length+' dimensions assessed';
+  checkReady();
+}
+function checkReady(){
+  const meta=document.getElementById('orgName').value&&document.getElementById('size').value&&document.getElementById('industry').value&&document.getElementById('age').value;
+  document.getElementById('calcBtn').disabled=!(meta&&Object.keys(answers).length===DIMS.length);
+}
+function calc(){
+  const org=document.getElementById('orgName').value;const size=document.getElementById('size').value;
+  let totalLvl=0,peerTotal=0;const rows=[];
+  DIMS.forEach((d,i)=>{const lvl=answers[i]+1;totalLvl+=lvl;peerTotal+=d.peer;rows.push({name:d.name,lvl,peer:d.peer});});
+  const score=Math.round(totalLvl/(DIMS.length*5)*100);
+  const peerScore=Math.round(peerTotal/(DIMS.length*5)*100);
+  const avg=totalLvl/DIMS.length;
+  let stage,color,summary;
+  if(avg>=4.2){stage="STAGE 5 · AI-NATIVE";color="var(--green)";summary=org+" operates as an AI-native GCC — ahead of the FY26 peer cohort and in the ~27% that reach top maturity within five years. The opportunity now is to productise internal capability and pursue charter expansion: become a global AI hub for the parent, not just a delivery centre.";}
+  else if(avg>=3.2){stage="STAGE 4 · SCALING";color="var(--teal)";summary=org+" is scaling AI with governed platforms and measured outcomes — above the GCC median. The gap to AI-native is narrow and specific. Closing the two weakest dimensions below is what converts \"scaling\" into a parent-recognised centre of excellence.";}
+  else if(avg>=2.4){stage="STAGE 3 · ESTABLISHING";color="var(--amber)";summary=org+" sits around the FY26 GCC peer median — real capability in pockets, but not yet governed or platformed at scale. This is the decisive stage: GCCs that systematise here become strategic; those that don't stay cost centres as the ecosystem moves up. The roadmap below sequences the jump.";}
+  else if(avg>=1.6){stage="STAGE 2 · EMERGING";color="var(--amber)";summary=org+" is behind the GCC cohort median. AI exists as experiments without the platform, governance, or talent model to scale. With 1,200+ India GCCs already AI-capable, the parent is likely asking for maturity this centre cannot yet evidence — the Horizon 1 actions below address that directly.";}
+  else{stage="STAGE 1 · NASCENT";color="var(--red)";summary=org+" is at the earliest maturity stage, well below the peer cohort. The priority is foundational: a funded mandate, a data foundation, and a first governed platform. Without these, AI stays anecdotal and the centre's strategic standing with the parent is at risk in a market moving this fast.";}
+  document.getElementById('rhOrg').textContent=(org.toUpperCase())+' · '+size+' · GCC AI MATURITY REPORT';
+  document.getElementById('bigScore').textContent=score;document.getElementById('bigScore').style.color=color;
+  document.getElementById('stage').textContent=stage;document.getElementById('stage').style.color=color;
+  window._shareData={kind:'GCC AI Architecture Assessment',line:(document.getElementById('orgName').value||'Our GCC')+' · Maturity '+score+'/100 vs '+peerScore+' peer median · '+stage};
+  document.getElementById('peerVal').textContent=peerScore;
+  document.getElementById('summary').textContent=summary;
+  document.getElementById('dimScore').innerHTML=rows.map(r=>{
+    const pct=r.lvl/5*100;const peerPct=r.peer/5*100;
+    const c=r.lvl>=4?'var(--green)':r.lvl>=3?'var(--teal)':r.lvl>=2?'var(--amber)':'var(--red)';
+    return '<div class="ds-row"><span class="nm">'+r.name+'</span><div class="ds-bar"><div class="ds-fill" style="background:'+c+'" data-w="'+pct+'"></div><div class="ds-peer-mark" style="left:'+peerPct+'%"></div></div><span class="ds-val" style="color:'+c+'">L'+r.lvl+' · '+Math.round(pct)+'%</span></div>';
+  }).join('');
+  setTimeout(function(){document.querySelectorAll('.ds-fill').forEach(f=>f.style.width=f.dataset.w+'%');},60);
+  const sizeMult={'< 500':1,'500–2,000':2.5,'2,000–5,000':5,'5,000+':9}[size]||2;
+  const gap=Math.max(0,peerScore-score);
+  document.getElementById('valueGrid').innerHTML=
+    '<div class="vg"><div class="n">'+Math.round(sizeMult*1.5)+'&ndash;'+Math.round(sizeMult*4)+'</div><div class="l">FTE-equivalents freed via platform reuse</div></div>'+
+    '<div class="vg"><div class="n">'+(gap>0?gap+' pts':'lead')+'</div><div class="l">'+(gap>0?'gap to peer median':'ahead of peer median')+'</div></div>'+
+    '<div class="vg"><div class="n">'+Math.round(6+sizeMult*1.2)+' mo</div><div class="l">to next maturity stage at focused pace</div></div>'+
+    '<div class="vg"><div class="n">3</div><div class="l">dimensions driving most of the gap</div></div>';
+  const ranked=rows.map(r=>Object.assign({},r)).sort((a,b)=>a.lvl-b.lvl);const w=ranked.slice(0,3);
+  document.getElementById('horizons').innerHTML=
+    '<div class="horizon"><div class="ht">HORIZON 1 · 0&ndash;6 MONTHS · STABILISE</div><div class="hi">Close the two lowest dimensions: <b>'+w[0].name+'</b> (L'+w[0].lvl+') and <b>'+w[1].name+'</b> (L'+w[1].lvl+'). These drag the whole score and are the fastest wins. Stand up the minimum governed baseline the parent org expects to see.</div></div>'+
+    '<div class="horizon"><div class="ht">HORIZON 2 · 6&ndash;18 MONTHS · SCALE</div><div class="hi">Lift <b>'+w[2].name+'</b> and your mid-tier dimensions a level via a shared platform and a defined AI operating model (CoE + platform team). Tie every initiative to a measured outcome so value realisation climbs with capability.</div></div>'+
+    '<div class="horizon"><div class="ht">HORIZON 3 · 18&ndash;36 MONTHS · LEAD</div><div class="hi">Convert capability into <b>charter expansion</b>: become the parent\'s AI centre of excellence, productise internal platforms, and report AI value at board level. This is where a GCC stops being a cost centre and becomes strategic &mdash; the move only ~27% complete within five years.</div></div>';
+  const tier=sizeMult>=5?'$499 (enterprise)':sizeMult>=2.5?'$249':'$99';
+  document.getElementById('ctaText').innerHTML='This report is the conversation-starter. The next step is a <b>Rynaut GCC AI Architecture engagement</b> (&#8377;2L+ scope) that turns this self-assessment into an executed Horizon-1 plan &mdash; governed platform baseline, the operating model, and the board narrative. <a href="mailto:quality.architect.pro@gmail.com?subject=GCC AI Architecture Engagement" target="_blank">Book a working session</a>, or print this report (Ctrl/Cmd&nbsp;+&nbsp;P) for your leadership deck. Suggested org-license tier for your size band: '+tier+'.';
+  document.getElementById('result').classList.add('show');
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+  // Store for report
+  window._rptData={org,size,score,peerScore,stage,color,summary,rows,ranked,sizeMult,gap,horizH1:w[0].name+' (L'+w[0].lvl+')',horizH2:w[1].name+' (L'+w[1].lvl+')',horizH3:w[2].name+' (L'+w[2].lvl+')',date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})};
+}
+
+function openReport(){
+  const r=window._rptData;if(!r)return;
+  const colHex=s=>s.replace('var(--green)','#2E8B5F').replace('var(--teal)','#0E7C8C').replace('var(--amber)','#C77E1A').replace('var(--red)','#C2453E');
+  const dimColHex=(lvl)=>lvl>=4?'#2E8B5F':lvl>=3?'#0E7C8C':lvl>=2?'#C77E1A':'#C2453E';
+  const COST={
+    "AI Strategy & Mandate":"Without a parent-aligned mandate, AI investment is at risk of being cut at the next budget cycle — and GCC leadership cannot defend headcount growth on an unfunded mandate.",
+    "Platform & Architecture":"Teams building from scratch multiply engineering cost 3–5× vs a reusable platform. Platform reuse is the single fastest lever for FTE-equivalent value.",
+    "Data Foundation":"Ungoverned data is the most common reason AI initiatives stall post-proof-of-concept. No data foundation = no scale.",
+    "MLOps / LLMOps":"Without eval gates, you have no way to prove a deployed model is still performing — making every production incident an unexplained reliability failure.",
+    "Governance & Risk":"Regulatory scrutiny on AI is accelerating globally. GCCs in BFSI, healthcare, and government sectors face board-level liability without documented AI governance.",
+    "Talent & Operating Model":"Talent without a defined operating model creates knowledge silos — capability exists but doesn't compound across the org.",
+    "Value Realisation":"AI investment without measured outcomes loses board support. GCCs that can't show ROI on AI are the first to have headcount and budgets reduced."
+  };
+
+  let dimRows=r.rows.map(row=>{
+    const pct=Math.round(row.lvl/5*100);const peerPct=Math.round(row.peer/5*100);
+    return '<div class="rpt-dim-row"><div class="rpt-dim-name">'+row.name+'</div><div class="rpt-dim-bar"><div class="rpt-dim-fill" style="width:'+pct+'%;background:'+dimColHex(row.lvl)+'"></div><div class="rpt-dim-peer" style="left:'+peerPct+'%"></div></div><div class="rpt-dim-val" style="color:'+dimColHex(row.lvl)+'">L'+row.lvl+'</div></div>';
+  }).join('');
+
+  let gapRows=r.ranked.slice(0,3).map(row=>'<div class="rpt-horizon"><div class="rpt-ht">'+row.name.toUpperCase()+' · L'+row.lvl+' → L'+(row.lvl+1)+'</div><div>'+COST[row.name]+'</div></div>').join('');
+
+  document.getElementById('rptContent').innerHTML=
+    '<button class="rpt-close" onclick="closeReport()">✕</button>'+
+    '<div class="rpt-cover">'+
+      '<div class="rpt-brand">RYNAUT · ARCHITECTING AUTOMATION — GCC AI ARCHITECTURE ASSESSMENT</div>'+
+      '<div class="rpt-title">'+r.org+' — AI Maturity Report</div>'+
+      '<div class="rpt-meta">'+r.size+' &nbsp;·&nbsp; Assessment date: '+r.date+'</div>'+
+      '<div class="rpt-score-row"><div class="rpt-score" style="color:'+colHex(r.color)+'">'+r.score+'</div><div><div class="rpt-stage" style="color:'+colHex(r.color)+'">'+r.stage+'</div><div style="font-size:12px;color:#6E6685;margin-top:4px;">vs '+r.peerScore+' FY26 GCC cohort median</div></div></div>'+
+      '<div class="rpt-bench-row">'+
+        '<div class="rpt-bv"><div class="bn">'+(r.gap>0?r.gap+' pts below':'Above')+'</div><div class="bl">vs peer median</div></div>'+
+        '<div class="rpt-bv"><div class="bn">'+Math.round(r.sizeMult*1.5)+'–'+Math.round(r.sizeMult*4)+'</div><div class="bl">FTE value via platform reuse</div></div>'+
+        '<div class="rpt-bv"><div class="bn">'+Math.round(6+r.sizeMult*1.2)+' mo</div><div class="bl">to next maturity stage</div></div>'+
+      '</div>'+
+      '<div class="rpt-summary">'+r.summary+'</div>'+
+    '</div>'+
+    '<div class="rpt-h2">Dimension scores vs FY26 GCC peer median <span style="font-size:10px;color:#C77E1A;font-family:\'JetBrains Mono\',monospace;">&nbsp;│ AMBER = PEER MEDIAN</span></div>'+dimRows+
+    '<div class="rpt-h2">Priority gaps — cost of not closing</div>'+gapRows+
+    '<div class="rpt-h2">Three-horizon roadmap</div>'+
+    '<div class="rpt-horizon"><div class="rpt-ht">HORIZON 1 · 0–6 MONTHS · STABILISE</div><div>Close '+r.horizH1+' and '+r.horizH2+'. These drag the overall score and are the fastest wins. Establish the minimum governed baseline the parent org expects to see.</div></div>'+
+    '<div class="rpt-horizon"><div class="rpt-ht">HORIZON 2 · 6–18 MONTHS · SCALE</div><div>Lift '+r.horizH3+' and mid-tier dimensions via a shared AI platform and a defined operating model (CoE + platform team). Tie every initiative to a measured outcome.</div></div>'+
+    '<div class="rpt-horizon"><div class="rpt-ht">HORIZON 3 · 18–36 MONTHS · LEAD</div><div>Convert capability into charter expansion: productise internal platforms, report AI value at board level. This is where a GCC stops being a cost centre. Only ~27% of GCCs complete this move within five years.</div></div>'+
+    '<div style="margin-top:22px;padding:14px;background:#f5f3fa;border-radius:8px;font-size:11.5px;color:#42395A;line-height:1.6;">Benchmarks are directional, derived from public Nasscom–Zinnov FY26 GCC ecosystem data, and intended to support internal planning. Value-at-stake figures are illustrative estimates, not financial guarantees.</div>'+
+    '<div class="rpt-footer"><span>© 2026 Rynaut · Architecting Automation</span><span>rynaut.gumroad.com</span><span>Source: Nasscom–Zinnov GCC Value Orbit FY26</span></div>';
+
+  document.getElementById('pdfOverlay').classList.add('open');
+}
+function closeReport(){document.getElementById('pdfOverlay').classList.remove('open');}
+
+function copyResult(btn){
+  const d=window._shareData;if(!d)return;
+  const txt=d.kind.toUpperCase()+'\n'+d.line+'\n\nGenerated with Rynaut · Architecting Automation';
+  navigator.clipboard.writeText(txt).then(()=>{const o=btn.textContent;btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},1800);});
+}
+function reset(){Object.keys(answers).forEach(k=>delete answers[k]);document.getElementById('result').classList.remove('show');document.getElementById('prog').textContent='0 / '+DIMS.length+' dimensions assessed';renderDims();checkReady();window.s

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India AI Talent Readiness Scorecard — Rynaut</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#F1F4F2;--paper:#FAFCFB;--ink:#16271F;--ink2:#374A40;--mut:#647A6F;--faint:#94A89C;
+  --line:#DEE6E1;--line2:#CDD8D1;
+  --teal:#0E7C56;--teal-d:#0A5C40;--teal-bg:#E1F0E9;
+  --amber:#C77E1A;--amber-bg:#FBF0DD;--red:#C2453E;--red-bg:#FBE6E3;
+  --green:#2E8B4F;--green-bg:#E4F2E8;--plum:#7A4B8C;--plum-bg:#F1E8F4;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.65;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 12% 0%,rgba(14,124,86,0.05),transparent 45%),radial-gradient(circle at 88% 100%,rgba(199,126,26,0.04),transparent 40%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:0 22px 90px;}
+header{padding:44px 0 24px;}
+.brand{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--teal);font-weight:700;margin-bottom:22px;}
+.brand .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);}
+.tg{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;padding:4px 11px;border-radius:20px;font-weight:700;background:var(--amber-bg);color:var(--amber);margin-bottom:16px;}
+h1{font-family:'Fraunces',serif;font-size:clamp(30px,5.5vw,48px);font-weight:600;letter-spacing:-0.5px;line-height:1.04;margin-bottom:14px;}
+.sub{font-size:15.5px;color:var(--ink2);max-width:640px;}
+.srcbar{margin-top:20px;padding:14px 18px;background:var(--paper);border:1px solid var(--line);border-radius:12px;font-size:12px;color:var(--mut);}
+.srcbar b{color:var(--teal-d);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1px;}
+.intro{font-size:15px;color:var(--ink2);margin:28px 0 20px;}
+.intro b{color:var(--ink);}
+.market{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:11px;margin-bottom:30px;}
+.mc{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:15px;}
+.mc .n{font-family:'Fraunces',serif;font-size:23px;font-weight:600;color:var(--teal);line-height:1;}
+.mc .l{font-size:11px;color:var(--mut);margin-top:5px;line-height:1.4;}
+.mode{display:flex;gap:8px;margin-bottom:24px;}
+.mode button{flex:1;padding:13px;background:var(--paper);border:1.5px solid var(--line2);border-radius:11px;color:var(--ink2);font-family:'Inter',sans-serif;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .15s;}
+.mode button.on{border-color:var(--teal);background:var(--teal-bg);color:var(--teal-d);}
+.dim-card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:12px;}
+.dim-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px;}
+.dim-name{font-size:15.5px;font-weight:700;color:var(--ink);}
+.dim-w{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--faint);letter-spacing:1px;}
+.dim-desc{font-size:13px;color:var(--mut);margin-bottom:14px;}
+.scale{display:flex;gap:6px;}
+.scale button{flex:1;padding:11px 4px;background:var(--bg);border:1.5px solid var(--line2);border-radius:9px;color:var(--mut);font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;}
+.scale button:hover{border-color:var(--teal);}
+.scale button.sel{border-color:var(--teal);background:var(--teal-bg);color:var(--teal-d);}
+.scale-lbls{display:flex;justify-content:space-between;font-size:10.5px;color:var(--faint);margin-top:7px;}
+.btn{display:block;width:100%;padding:17px;background:var(--teal);color:#fff;border:none;border-radius:12px;font-family:'Inter',sans-serif;font-size:15px;font-weight:700;cursor:pointer;transition:all .16s;margin-top:8px;box-shadow:0 6px 20px rgba(14,124,86,0.18);}
+.btn:hover{background:var(--teal-d);transform:translateY(-1px);box-shadow:0 10px 28px rgba(14,124,86,0.24);}
+.btn:disabled{background:var(--line2);color:var(--faint);cursor:not-allowed;transform:none;box-shadow:none;}
+.btn.sec{background:transparent;border:1.5px solid var(--line2);color:var(--ink2);box-shadow:none;}
+.btn.sec:hover{border-color:var(--teal);color:var(--teal-d);background:var(--paper);}
+.result{display:none;margin-top:28px;}
+.result.show{display:block;animation:rise .5s cubic-bezier(.2,.8,.2,1);}
+@keyframes rise{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
+/* Score card */
+.gauge{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:32px;text-align:center;margin-bottom:18px;box-shadow:0 12px 40px rgba(22,39,31,0.06);}
+.gauge .big{font-family:'Fraunces',serif;font-size:76px;font-weight:600;line-height:1;}
+.gauge .big .pct{font-size:30px;color:var(--faint);}
+.gauge .band{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;font-weight:700;margin-top:8px;}
+.bench{display:flex;justify-content:center;gap:22px;margin-top:20px;flex-wrap:wrap;}
+.bench div{font-size:11px;color:var(--mut);}
+.bench b{display:block;font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:var(--amber);}
+.percentile{font-size:13.5px;color:var(--ink2);margin-top:18px;line-height:1.65;max-width:520px;margin-left:auto;margin-right:auto;}
+.percentile b{color:var(--teal-d);}
+/* Distribution viz */
+.dist-wrap{margin:22px auto 0;max-width:480px;}
+.dist-label{display:flex;justify-content:space-between;font-size:10px;color:var(--mut);font-family:'JetBrains Mono',monospace;margin-bottom:6px;letter-spacing:.5px;}
+.dist-bar{height:32px;background:var(--line);border-radius:8px;overflow:hidden;position:relative;}
+.dist-fill-bg{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(90deg,var(--red-bg) 0%,var(--amber-bg) 35%,var(--teal-bg) 70%,var(--green-bg) 100%);width:100%;}
+.dist-you{position:absolute;top:-4px;bottom:-4px;width:3px;background:var(--ink);border-radius:2px;transition:left 1s cubic-bezier(.2,.8,.2,1);}
+.dist-you::after{content:'YOU';position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:8px;font-weight:700;color:var(--ink);white-space:nowrap;}
+.dist-bench-mark{position:absolute;top:-4px;bottom:-4px;width:2px;background:var(--amber);opacity:.7;}
+.dist-bench-mark::after{content:'INDIA AVG';position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:7px;color:var(--amber);white-space:nowrap;}
+.dist-note{font-size:11px;color:var(--mut);text-align:center;margin-top:18px;}
+/* Radar */
+.radar{display:flex;flex-direction:column;gap:10px;margin:18px 0;}
+.radar-row{display:grid;grid-template-columns:170px 1fr 56px;gap:13px;align-items:center;font-size:12px;}
+.radar-row .nm{color:var(--ink);font-weight:600;}
+.radar-bar-wrap{position:relative;}
+.radar-bar{height:22px;background:var(--line);border-radius:7px;overflow:hidden;}
+.radar-fill{height:100%;border-radius:7px;width:0;transition:width .85s cubic-bezier(.2,.8,.2,1);}
+.radar-bench{position:absolute;top:0;bottom:0;width:2px;background:var(--amber);opacity:.6;pointer-events:none;}
+.radar-val{font-family:'JetBrains Mono',monospace;font-weight:700;text-align:right;}
+.radar-legend{font-size:10px;color:var(--mut);text-align:right;margin-top:4px;}
+.radar-legend .m{color:var(--amber);font-weight:700;}
+/* Findings */
+.findings{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:16px;}
+.findings h3{font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin-bottom:14px;color:var(--ink);}
+.finding{display:flex;gap:13px;align-items:flex-start;padding:13px 0;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink2);}
+.finding:first-child{border-top:none;}
+.finding .ic{font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;padding:3px 9px;border-radius:6px;white-space:nowrap;margin-top:2px;flex-shrink:0;}
+.f-gap{background:var(--red-bg);color:var(--red);}
+.f-ok{background:var(--green-bg);color:var(--green);}
+.f-grow{background:var(--amber-bg);color:var(--amber);}
+.finding b{color:var(--ink);}
+.finding .cost{display:block;font-size:11.5px;color:var(--red);margin-top:4px;font-style:italic;}
+/* CTA */
+.cta{padding:26px;background:linear-gradient(135deg,var(--teal-bg),var(--paper));border:1px solid var(--line);border-radius:16px;}
+.cta h4{font-family:'Fraunces',serif;font-size:20px;font-weight:600;color:var(--teal-d);margin-bottom:10px;}
+.cta p{font-size:13.5px;color:var(--ink2);line-height:1.7;}
+.cta a{color:var(--teal-d);font-weight:600;}
+/* Share */
+.share-row{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 4px;}
+.share-btn{flex:1;min-width:150px;padding:14px 16px;border-radius:11px;border:1px solid var(--line2);background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.share-btn:hover{border-color:var(--teal-d);color:var(--teal-d);transform:translateY(-1px);}
+.share-btn.copied{border-color:var(--green);color:var(--green);}
+.share-note{font-size:11px;color:var(--mut);text-align:center;margin-top:8px;}
+/* PDF report overlay */
+.pdf-overlay{display:none;position:fixed;inset:0;z-index:100;background:rgba(22,39,31,0.6);align-items:center;justify-content:center;}
+.pdf-overlay.open{display:flex;}
+.pdf-modal{background:#fff;border-radius:18px;width:680px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,0.25);}
+/* Report styles */
+.rpt{font-family:'Inter',sans-serif;padding:48px 52px;color:#1a2b1e;line-height:1.6;background:#fff;}
+.rpt-cover{padding-bottom:32px;border-bottom:2px solid #0E7C56;margin-bottom:32px;}
+.rpt-brand{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:3px;color:#0E7C56;font-weight:700;margin-bottom:20px;}
+.rpt-title{font-family:'Fraunces',serif;font-size:28px;font-weight:600;margin-bottom:8px;color:#16271F;}
+.rpt-meta{font-size:12px;color:#647A6F;margin-bottom:20px;}
+.rpt-score-row{display:flex;align-items:baseline;gap:16px;margin-bottom:8px;}
+.rpt-score{font-family:'Fraunces',serif;font-size:64px;font-weight:600;line-height:1;}
+.rpt-band{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:2px;font-weight:700;}
+.rpt-bench-row{display:flex;gap:24px;margin:16px 0;}
+.rpt-bv{text-align:center;background:#f5f9f7;border:1px solid #DEE6E1;border-radius:10px;padding:12px 18px;}
+.rpt-bv .bn{font-family:'Fraunces',serif;font-size:22px;font-weight:600;color:#C77E1A;}
+.rpt-bv .bl{font-size:10px;color:#647A6F;margin-top:3px;}
+.rpt-summary{font-size:13px;color:#374A40;line-height:1.65;margin-top:16px;padding:14px 16px;background:#f5f9f7;border-left:3px solid #0E7C56;border-radius:0 8px 8px 0;}
+.rpt-section{margin-bottom:28px;}
+.rpt-h2{font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:#16271F;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #DEE6E1;}
+.rpt-dim-row{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #f0f4f1;font-size:12px;}
+.rpt-dim-row:last-child{border-bottom:none;}
+.rpt-dim-name{width:180px;font-weight:600;color:#16271F;flex-shrink:0;}
+.rpt-dim-bar{flex:1;height:14px;background:#EEF3F0;border-radius:4px;overflow:hidden;position:relative;}
+.rpt-dim-fill{height:100%;border-radius:4px;}
+.rpt-dim-peer{position:absolute;top:0;bottom:0;width:2px;background:#C77E1A;}
+.rpt-dim-val{width:40px;text-align:right;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:11px;}
+.rpt-gap-item{padding:10px 0;border-bottom:1px solid #f0f4f1;font-size:12px;}
+.rpt-gap-item:last-child{border-bottom:none;}
+.rpt-gap-item .gp-head{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+.rpt-gap-item .gp-badge{font-family:'JetBrains Mono',monospace;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;}
+.gp-gap{background:#FBE6E3;color:#C2453E;}
+.gp-grow{background:#FBF0DD;color:#C77E1A;}
+.rpt-gap-item .gp-act{color:#374A40;margin-top:4px;padding-left:12px;border-left:2px solid #DEE6E1;}
+.rpt-gap-item .gp-cost{font-size:11px;color:#C2453E;margin-top:3px;font-style:italic;}
+.rpt-footer{margin-top:32px;padding-top:18px;border-top:1px solid #DEE6E1;display:flex;justify-content:space-between;font-size:10px;color:#94A89C;font-family:'JetBrains Mono',monospace;}
+.rpt-print-btn{display:block;width:100%;padding:15px;background:#0E7C56;color:#fff;border:none;border-radius:0 0 18px 18px;font-family:'Inter',sans-serif;font-size:14px;font-weight:700;cursor:pointer;letter-spacing:.3px;}
+.rpt-print-btn:hover{background:#0A5C40;}
+.rpt-close{float:right;background:none;border:none;font-size:22px;cursor:pointer;color:#647A6F;line-height:1;padding:4px;}
+/* Footer */
+footer{padding:34px 0 10px;text-align:center;color:var(--mut);font-size:11px;border-top:1px solid var(--line);margin-top:44px;}
+footer .b{font-family:'JetBrains Mono',monospace;color:var(--teal-d);letter-spacing:3px;margin-bottom:7px;font-weight:700;}
+@media print{
+  body{background:#fff;}body::before{display:none;}
+  .btn,.mode,.cta a,.share-row,.share-note,.pdf-overlay{display:none;}
+  .gauge{box-shadow:none;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="brand"><span class="dot"></span>RYNAUT · ARCHITECTING AUTOMATION</div>
+  <span class="tg">$29 · INDIVIDUAL / TEAM LICENSE</span>
+  <h1>India AI Talent Readiness Scorecard</h1>
+  <p class="sub">Score yourself or your engineering team across six dimensions of AI readiness, weighted by what the India market actually hires for. Get a readiness number, your percentile against the national benchmark, and the specific gaps that separate you from the next tier.</p>
+  <div class="srcbar"><b>BENCHMARK</b> &nbsp;Nasscom: AI job demand to cross 1M by 2026 · only ~16% of IT professionals AI-skilled (MeitY) · 86% of employers say AI has reshaped roles · India is the #1 AI hiring market globally · India Skills Report 2026: 90%+ of employees already use GenAI tools.</div>
+</header>
+<p class="intro">The signal from Nasscom and Indeed is blunt: against ~1M AI-adjacent roles, only about <b>16% of engineers are AI-ready</b>. And <b>90%+ already use GenAI tools</b> — but using a tool isn't being AI-ready. This scorecard turns that abstract gap into <b>your number</b> and shows exactly where you sit on the distribution.</p>
+<div class="market">
+  <div class="mc"><div class="n">~1M</div><div class="l">AI roles opening by 2026</div></div>
+  <div class="mc"><div class="n">~16%</div><div class="l">currently AI-ready</div></div>
+  <div class="mc"><div class="n">86%</div><div class="l">employers: AI reshaped roles</div></div>
+  <div class="mc"><div class="n">#1</div><div class="l">India: AI hiring globally</div></div>
+  <div class="mc"><div class="n">90%+</div><div class="l">already use GenAI tools</div></div>
+</div>
+<div class="mode">
+  <button class="on" data-mode="self" onclick="setMode('self',this)">Score myself</button>
+  <button data-mode="team" onclick="setMode('team',this)">Score my team</button>
+</div>
+<div id="dims"></div>
+<button class="btn" id="calcBtn" disabled onclick="calc()">Calculate readiness score</button>
+
+<div class="result" id="result">
+  <div class="gauge">
+    <div class="big" id="bigScore">—<span class="pct">/100</span></div>
+    <div class="band" id="band"></div>
+    <div class="dist-wrap">
+      <div class="dist-label"><span>LOWER 25%</span><span>INDIA AVG (~28)</span><span>AI-READY THRESHOLD (~70)</span><span>TOP 10%</span></div>
+      <div class="dist-bar">
+        <div class="dist-fill-bg"></div>
+        <div class="dist-bench-mark" style="left:28%"></div>
+        <div class="dist-you" id="distYou" style="left:0%"></div>
+      </div>
+      <div class="dist-note" id="distNote"></div>
+    </div>
+    <div class="bench">
+      <div><b>~16%</b>India AI-ready (Nasscom)</div>
+      <div><b id="pctTile">—</b>Your percentile</div>
+      <div><b>~70</b>AI-ready threshold</div>
+      <div><b>1M</b>Roles opening</div>
+    </div>
+    <div class="percentile" id="pctText"></div>
+  </div>
+
+  <div class="radar" id="radar"></div>
+  <div class="radar-legend" style="text-align:right;margin:-6px 0 14px;font-size:10px;color:var(--mut);">Bar = your score &nbsp;|&nbsp; <span class="m">│ amber mark</span> = India hiring benchmark per dimension</div>
+
+  <div class="findings">
+    <h3 id="findHead">What this means</h3>
+    <div id="findings"></div>
+  </div>
+  <div class="cta">
+    <h4>Close the gap</h4>
+    <p id="ctaText"></p>
+  </div>
+  <div class="share-row">
+    <button class="share-btn" onclick="copyResult(this)">📋 Copy result summary</button>
+    <button class="share-btn" onclick="openReport()">📄 Download PDF report</button>
+  </div>
+  <div class="share-note">The PDF report is branded and printable — save it to your quality file or share with your manager.</div>
+  <button class="btn sec" style="margin-top:16px;" onclick="resetTool()">Re-score</button>
+</div>
+</div>
+
+<!-- PDF Modal -->
+<div class="pdf-overlay" id="pdfOverlay" onclick="if(event.target===this)closeReport()">
+  <div class="pdf-modal">
+    <div class="rpt" id="rptContent"></div>
+    <button class="rpt-print-btn" onclick="window.print()">⬇ Print / Save as PDF &nbsp;(Ctrl+P)</button>
+  </div>
+</div>
+
+<footer>
+  <div class="b">RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div>© 2026 Rynaut. Individual &amp; team license (up to 10 users). Scored locally against Nasscom AI talent benchmarks.</div>
+</footer>
+
+<script>
+const DIMS=[
+  {key:"build",name:"Shipped AI Systems",w:25,bench:32,
+   desc:"Has actually built and deployed LLM/AI features to production — real systems with users, not tutorials.",
+   cost:"Engineers who can't evidence shipped AI systems are screened out early in architect-track interviews — the gap costs 6–18 months of role progression.",
+   self:["Never shipped AI","Shipped a small feature","Owned a prod AI feature","Architected a prod AI system"],
+   team:["No one has shipped AI","A few individuals have","Multiple owners across team","Team runs AI systems at scale"]},
+  {key:"eval",name:"Evaluation & Quality",w:20,bench:25,
+   desc:"Can prove an AI system works — evals, guardrails, observability. The single biggest senior/architect differentiator.",
+   cost:"Without eval fluency, engineers get filtered to feature-builder roles not architect roles. The salary delta is typically ₹8–15L/yr.",
+   self:["No idea how to eval","Manual spot-checks","Some automated evals","Full eval + observability"],
+   team:["No eval practice","Ad-hoc checks","Some teams instrument","Eval is standard practice"]},
+  {key:"arch",name:"Systems Architecture",w:20,bench:28,
+   desc:"Designs AI components within larger systems — seams, scaling, cost, failure isolation.",
+   cost:"This is the dimension GCCs score hardest in interviews. Missing it means senior-engineer ceiling, not architect track.",
+   self:["Feature-level only","Aware of patterns","Design multi-component systems","Architect platform-level AI"],
+   team:["Feature-by-feature","Some design discipline","Shared patterns exist","Platform architecture in place"]},
+  {key:"agentic",name:"Agentic & Memory Patterns",w:15,bench:18,
+   desc:"Fluent in orchestration, tool routing, and memory contracts — the 2026 core skill.",
+   cost:"Agentic fluency is the fastest-moving hiring signal. Companies building agent systems pay a 20–40% premium over standard LLM API work.",
+   self:["Unfamiliar","Read about it","Built a simple agent","Production agentic systems"],
+   team:["Unfamiliar","Experimenting","Some prod agents","Agentic is core competency"]},
+  {key:"compliance",name:"Compliance & Governance",w:10,bench:15,
+   desc:"Data residency, auditability, access control — what GCCs and regulated orgs increasingly require.",
+   cost:"Skipping this dimension makes candidates invisible for GCC and BFSI/pharma roles — a segment with 1,200+ AI-capable GCCs in India alone.",
+   self:["Not considered","Aware of basics","Design with it in mind","Compliance-native by default"],
+   team:["Not addressed","Some awareness","Built into some work","Governed by default"]},
+  {key:"comms",name:"Stakeholder Communication",w:10,bench:20,
+   desc:"Can present and defend an AI design to non-engineers. The architect's daily job.",
+   cost:"Communication gaps cap IC engineers at L5/L6. Moving to architect track requires this — it's consistently the last gap to close and the hardest to coach.",
+   self:["Code-only","Can explain to peers","Present to leadership","Drive org AI decisions"],
+   team:["Engineering-siloed","Some cross-functional","Regular stakeholder work","AI strategy partner to business"]},
+];
+let mode="self";
+const answers={};
+let _report={};
+
+function setMode(m,el){
+  mode=m;
+  document.querySelectorAll('.mode button').forEach(b=>b.classList.toggle('on',b===el));
+  render();
+}
+function render(){
+  document.getElementById('dims').innerHTML=DIMS.map(d=>{
+    const labels=d[mode];
+    return '<div class="dim-card"><div class="dim-head"><div class="dim-name">'+d.name+'</div><div class="dim-w">WEIGHT '+d.w+'%</div></div><div class="dim-desc">'+d.desc+'</div><div class="scale">'+labels.map((l,i)=>'<button data-k="'+d.key+'" data-v="'+i+'" onclick="pick(\''+d.key+'\','+i+',this)" class="'+(answers[d.key]===i?'sel':'')+'">'+i+'</button>').join('')+'</div><div class="scale-lbls"><span>'+labels[0]+'</span><span>'+labels[3]+'</span></div></div>';
+  }).join('');
+}
+function pick(k,v,el){
+  answers[k]=v;
+  el.parentElement.querySelectorAll('button').forEach(b=>b.classList.toggle('sel',+b.dataset.v===v));
+  document.getElementById('calcBtn').disabled=Object.keys(answers).length<DIMS.length;
+}
+
+function calc(){
+  let weighted=0;const perDim={};
+  DIMS.forEach(d=>{const lvl=answers[d.key];const pct=Math.round(lvl/3*100);perDim[d.key]={pct,name:d.name,w:d.w,bench:d.bench,cost:d.cost};weighted+=pct*d.w/100;});
+  const score=Math.round(weighted);
+
+  // Percentile mapping
+  let percentile;
+  if(score>=85)percentile=95;else if(score>=75)percentile=88;else if(score>=65)percentile=75;
+  else if(score>=55)percentile=60;else if(score>=45)percentile=42;else if(score>=35)percentile=28;
+  else if(score>=25)percentile=16;else percentile=8;
+
+  let band,color;
+  if(score>=75){band="AI-READY · ARCHITECT TIER";color="var(--green)";}
+  else if(score>=55){band="EMERGING · CLOSE THE GAP";color="var(--amber)";}
+  else if(score>=35){band="FOUNDATION · BUILD PORTFOLIO";color="var(--plum)";}
+  else{band="EARLY · START SHIPPING";color="var(--red)";}
+
+  document.getElementById('bigScore').innerHTML=score+'<span class="pct">/100</span>';
+  document.getElementById('bigScore').style.color=color;
+  document.getElementById('band').textContent=band;
+  document.getElementById('band').style.color=color;
+  document.getElementById('pctTile').textContent=percentile+'th';
+
+  // Distribution viz — position marker
+  setTimeout(()=>{document.getElementById('distYou').style.left=Math.min(score,99)+'%';},80);
+  document.getElementById('distNote').textContent='The amber line marks the India average (~28). The AI-ready threshold is ~70. You are at '+score+'.';
+
+  const readyMsg=score>=70?'You clear the AI-ready bar that ~84% of India\'s workforce currently does not.':'The AI-ready threshold sits near 70 — you\'re '+(70-score)+' points below it, alongside most of the market.';
+  document.getElementById('pctText').innerHTML='You score higher than roughly <b>'+percentile+'%</b> of the benchmarked India tech workforce. '+readyMsg;
+
+  // Radar with bench marks
+  document.getElementById('radar').innerHTML=DIMS.map(d=>{
+    const p=perDim[d.key].pct;
+    const benchPct=d.bench;
+    const col=p>=75?'var(--green)':p>=50?'var(--amber)':p>=25?'var(--plum)':'var(--red)';
+    return '<div class="radar-row"><span class="nm">'+d.name+'</span><div class="radar-bar-wrap"><div class="radar-bar"><div class="radar-fill" style="background:'+col+'" data-w="'+p+'"></div></div><div class="radar-bench" style="left:'+benchPct+'%"></div></div><span class="radar-val" style="color:'+col+'">'+p+'</span></div>';
+  }).join('');
+  setTimeout(()=>document.querySelectorAll('.radar-fill').forEach(f=>f.style.width=f.dataset.w+'%'),80);
+
+  // Findings with cost framing
+  const ranked=DIMS.map(d=>Object.assign({},perDim[d.key],{key:d.key})).sort((a,b)=>(a.pct-b.pct)||(b.w-a.w));
+  const weak=ranked.slice(0,2),strong=ranked.slice(-1),mid=ranked.slice(2,4);
+  let fh='';
+  weak.forEach(w=>{
+    fh+='<div class="finding"><span class="ic f-gap">GAP</span><div><b>'+w.name+'</b> at '+w.pct+'% — your highest-leverage fix'+(w.w>=20?' (heavily weighted by the market)':'')+'. This is what separates you from the next tier.<span class="cost">'+w.cost+'</span></div></div>';
+  });
+  fh+='<div class="finding"><span class="ic f-ok">STRENGTH</span><div><b>'+strong[0].name+'</b> at '+strong[0].pct+'% — lead with this in interviews and positioning; employers now hire on demonstrable skill.</div></div>';
+  mid.forEach(m=>{fh+='<div class="finding"><span class="ic f-grow">GROW</span><div><b>'+m.name+'</b> at '+m.pct+'% — solid base; push it up once your gaps are closed.</div></div>';});
+
+  document.getElementById('findHead').textContent=mode==='team'?'What this means for your team':'What this means for you';
+  document.getElementById('findings').innerHTML=fh;
+
+  const ctaSelf='Your two GAP dimensions are your roadmap. The <a href="https://rynaut.github.io/free-tools/03-india-ai-career-roadmap.html" target="_blank">India AI Architecture Career Roadmap</a> sequences exactly how to close them. Re-score every 90 days — the AI-ready threshold is ~70.';
+  const ctaTeam='This score is your hiring and upskilling baseline. Use the GAP dimensions to scope training, and Rynaut\'s <a href="https://rynaut.github.io/free-tools/06-gcc-ai-architecture-assessment.html" target="_blank">GCC AI Architecture Assessment</a> to benchmark your org\'s AI maturity against the FY26 peer cohort. Team license covers up to 10 scores.';
+  document.getElementById('ctaText').innerHTML=mode==='team'?ctaTeam:ctaSelf;
+
+  // Store for report
+  _report={score,band,percentile,perDim,weak,strong,mid,mode,color,date:new Date().toLocaleDateString('en-IN',{day:'numeric',month:'long',year:'numeric'})};
+  window._shareData={kind:'India AI Talent Readiness Scorecard',line:'Readiness '+score+'/100 · '+band+' · '+percentile+'th percentile vs India benchmark'};
+
+  document.getElementById('result').classList.add('show');
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+}
+
+function copyResult(btn){
+  const d=window._shareData;if(!d)return;
+  const txt=d.kind.toUpperCase()+'\n'+d.line+'\n\nGenerated with Rynaut · Architecting Automation';
+  navigator.clipboard.writeText(txt).then(()=>{const o=btn.textContent;btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},1800);});
+}
+
+function openReport(){
+  const r=_report;if(!r.score)return;
+  const dimColor=p=>p>=75?'#2E8B4F':p>=50?'#C77E1A':p>=25?'#7A4B8C':'#C2453E';
+  const badgeCls=p=>p>=75?'gp-grow':'gp-gap';
+  const badgeLbl=p=>p>=75?'GROW':'GAP';
+
+  let dimRows=DIMS.map(d=>{
+    const p=r.perDim[d.key].pct;
+    const benchPct=d.bench;
+    return '<div class="rpt-dim-row"><div class="rpt-dim-name">'+d.name+'</div><div class="rpt-dim-bar"><div class="rpt-dim-fill" style="width:'+p+'%;background:'+dimColor(p)+'"></div><div class="rpt-dim-peer" style="left:'+benchPct+'%"></div></div><div class="rpt-dim-val" style="color:'+dimColor(p)+'">'+p+'</div></div>';
+  }).join('');
+
+  let gapRows=[...r.weak,...r.mid].map(g=>{
+    return '<div class="rpt-gap-item"><div class="gp-head"><span class="gp-badge '+badgeCls(g.pct)+'">'+badgeLbl(g.pct)+'</span><b>'+g.name+' · '+g.pct+'%</b></div><div class="gp-act">'+DIMS.find(d=>d.name===g.name).cost+'</div></div>';
+  }).join('');
+
+  document.getElementById('rptContent').innerHTML=
+    '<button class="rpt-close" onclick="closeReport()">✕</button>'+
+    '<div class="rpt-cover">'+
+      '<div class="rpt-brand">RYNAUT · ARCHITECTING AUTOMATION</div>'+
+      '<div class="rpt-title">India AI Talent Readiness Scorecard</div>'+
+      '<div class="rpt-meta">Assessment date: '+r.date+' &nbsp;·&nbsp; Mode: '+(r.mode==='team'?'Team assessment':'Individual assessment')+'</div>'+
+      '<div class="rpt-score-row"><div class="rpt-score" style="color:'+r.color.replace('var(--','#').replace(')','').replace('green','2E8B4F').replace('amber','C77E1A').replace('plum','7A4B8C').replace('red','C2453E')+'">'+r.score+'</div><div class="rpt-band" style="color:#374A40">'+r.band+'</div></div>'+
+      '<div class="rpt-bench-row">'+
+        '<div class="rpt-bv"><div class="bn">'+r.percentile+'th</div><div class="bl">Your percentile vs India benchmark</div></div>'+
+        '<div class="rpt-bv"><div class="bn">~16%</div><div class="bl">India AI-ready workforce (Nasscom FY26)</div></div>'+
+        '<div class="rpt-bv"><div class="bn">~70</div><div class="bl">AI-ready score threshold</div></div>'+
+      '</div>'+
+      '<div class="rpt-summary">'+(r.score>=70?'This score clears the AI-ready threshold. Focus on converting strengths into visible portfolio evidence and closing the two growth dimensions below.':'This score sits below the AI-ready threshold (~70). The two GAP dimensions below are your critical path — each one carries a real cost in terms of role progression and salary ceiling.')+'</div>'+
+    '</div>'+
+    '<div class="rpt-section"><div class="rpt-h2">Dimension scores vs India hiring benchmark</div><div style="font-size:10px;color:#94A89C;margin-bottom:10px;font-family:\'JetBrains Mono\',monospace;">BAR = YOUR SCORE &nbsp;|&nbsp; <span style="color:#C77E1A">│ AMBER MARK</span> = INDIA HIRING BENCHMARK</div>'+dimRows+'</div>'+
+    '<div class="rpt-section"><div class="rpt-h2">Priority actions</div>'+gapRows+'</div>'+
+    '<div class="rpt-section"><div class="rpt-h2">Next steps</div><div style="font-size:12px;color:#374A40;line-height:1.7;">'+(r.mode==='team'?'Use GAP dimensions to scope upskilling investment. Re-assess in 90 days. For org-wide AI maturity benchmarking against GCC peers, see the Rynaut GCC AI Architecture Assessment.':'Re-score in 90 days to track movement. Use the India AI Architecture Career Roadmap to sequence how to close your top two GAP dimensions. The AI-ready threshold is ~70 — that is the number that changes your interview outcomes.')+'</div></div>'+
+    '<div class="rpt-footer"><span>© 2026 Rynaut · Architecting Automation</span><span>rynaut.gumroad.com</span><span>Benchmarked against Nasscom AI Talent data FY26</span></div>';
+
+  document.getElementById('pdfOverlay').classList.add('open');
+}
+function closeReport(){document.getElementById('pdfOverlay').classList.remove('open');}
+
+function resetTool(){
+  Object.keys(answers).forEach(k=>delete answers[k]);
+  document.getElementById('result').classList.remove('show');
+  document.getElementById('calcBtn').disabled=true;
+  render();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+render();
+</script>
+</body>
+</html>

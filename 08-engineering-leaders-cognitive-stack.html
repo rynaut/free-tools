@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Engineering Leader's Cognitive Stack — Rynaut</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
+:root{
+  --bg:#FAF7F0;--paper:#FFFFFF;--cream:#F4EFE3;--sand:#EDE6D6;
+  --ink:#1C1B17;--ink2:#46443B;--mut:#7C7868;--faint:#A8A293;
+  --line:#E4DDCC;--line2:#D4CBB6;
+  --forest:#1F6B4F;--forest-d:#16513B;--forest-bg:#E3F0E9;
+  --clay:#C25B3A;--clay-d:#9E4528;--clay-bg:#F8E7DF;
+  --gold:#C99A2E;--gold-d:#9A7320;--gold-bg:#F8EFD6;
+  --sky:#2B7FA8;--sky-bg:#E0EFF5;
+  --plum:#7B5099;--plum-bg:#EFE6F4;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--ink);font-family:'Inter',sans-serif;line-height:1.6;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(circle at 15% -5%,rgba(31,107,79,0.05),transparent 40%),radial-gradient(circle at 100% 100%,rgba(201,154,46,0.05),transparent 40%);pointer-events:none;z-index:0;}
+.wrap{position:relative;z-index:1;max-width:860px;margin:0 auto;padding:0 22px 90px;}
+
+/* Header */
+header{padding:46px 0 28px;}
+.brand{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--forest);font-weight:600;margin-bottom:22px;display:flex;align-items:center;gap:10px;}
+.brand::before{content:'';width:26px;height:1px;background:var(--forest);}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:var(--forest-bg);border:1px solid rgba(31,107,79,0.18);border-radius:30px;padding:5px 14px;font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--forest-d);font-weight:600;margin-bottom:20px;}
+h1{font-family:'Fraunces',serif;font-size:clamp(33px,6vw,56px);font-weight:600;letter-spacing:-1px;line-height:1.02;margin-bottom:16px;color:var(--ink);}
+h1 em{font-style:italic;color:var(--forest);}
+.sub{font-size:16px;color:var(--ink2);max-width:600px;line-height:1.6;}
+.promise{margin-top:20px;padding:16px 20px;background:var(--forest-bg);border:1px solid rgba(31,107,79,0.15);border-radius:13px;font-size:14px;color:var(--forest-d);line-height:1.55;}
+.promise b{font-weight:600;}
+
+/* Today strip */
+.today{margin-top:24px;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px 24px;box-shadow:0 4px 20px rgba(28,27,23,0.04);}
+.today-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;margin-bottom:16px;}
+.today-h{font-family:'Fraunces',serif;font-size:19px;font-weight:600;}
+.streak-badge{display:flex;align-items:center;gap:8px;font-family:'Geist Mono',monospace;font-size:13px;font-weight:600;color:var(--clay-d);background:var(--clay-bg);padding:7px 14px;border-radius:30px;}
+.streak-badge .flame{font-size:15px;}
+.today-sub{font-size:13px;color:var(--mut);margin-bottom:16px;}
+.day1-cells{display:flex;gap:7px;flex-wrap:wrap;}
+.dcell{flex:1;min-width:60px;border:1.5px solid var(--line2);border-radius:11px;padding:13px 10px;text-align:center;cursor:pointer;transition:all .16s;background:var(--cream);}
+.dcell:hover{border-color:var(--forest);transform:translateY(-2px);}
+.dcell.done{border-color:var(--forest);background:var(--forest-bg);}
+.dcell .ic{font-size:19px;margin-bottom:5px;filter:grayscale(0.3);}
+.dcell.done .ic{filter:none;}
+.dcell .nm{font-size:10.5px;font-weight:600;color:var(--ink2);line-height:1.25;}
+.dcell.done .nm{color:var(--forest-d);}
+.dcell .chk{font-family:'Geist Mono',monospace;font-size:9px;color:var(--faint);margin-top:4px;}
+.dcell.done .chk{color:var(--forest);}
+.today-progress{margin-top:16px;display:flex;align-items:center;gap:12px;}
+.tp-bar{flex:1;height:8px;background:var(--sand);border-radius:5px;overflow:hidden;}
+.tp-fill{height:100%;background:linear-gradient(90deg,var(--forest),var(--gold));width:0;transition:width .5s cubic-bezier(.2,.8,.2,1);border-radius:5px;}
+.tp-txt{font-family:'Geist Mono',monospace;font-size:11px;color:var(--mut);white-space:nowrap;}
+.win-msg{margin-top:14px;padding:13px 16px;background:var(--gold-bg);border-radius:11px;font-size:13px;color:var(--gold-d);display:none;line-height:1.5;}
+.win-msg.show{display:block;animation:pop .4s cubic-bezier(.2,1.4,.4,1);}
+@keyframes pop{from{opacity:0;transform:scale(.96);}to{opacity:1;transform:none;}}
+.win-msg b{font-weight:600;}
+
+/* Nav */
+.nav{display:flex;gap:4px;margin:34px 0 0;background:var(--cream);border:1px solid var(--line);border-radius:13px;padding:5px;flex-wrap:wrap;}
+.nav button{flex:1;min-width:110px;padding:11px 9px;background:transparent;border:none;color:var(--mut);font-family:'Inter',sans-serif;font-size:12.5px;font-weight:500;cursor:pointer;border-radius:9px;transition:all .16s;white-space:nowrap;}
+.nav button:hover{color:var(--ink2);}
+.nav button.on{background:var(--paper);color:var(--ink);font-weight:600;box-shadow:0 2px 8px rgba(28,27,23,0.07);}
+.nav button .num{font-family:'Geist Mono',monospace;font-size:10px;color:var(--mut);display:block;margin-bottom:2px;}
+.nav button.on .num{color:var(--forest);}
+
+/* Panels */
+.panel{display:none;padding-top:32px;animation:fade .32s ease;}
+.panel.on{display:block;}
+@keyframes fade{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+.panel-head{margin-bottom:24px;}
+.panel-label{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:2.5px;color:var(--forest);font-weight:600;margin-bottom:10px;}
+.panel-head h2{font-family:'Fraunces',serif;font-size:clamp(24px,4vw,34px);font-weight:600;letter-spacing:-0.5px;line-height:1.1;margin-bottom:10px;}
+.panel-head p{font-size:14.5px;color:var(--ink2);max-width:620px;line-height:1.6;}
+.src-note{font-family:'Geist Mono',monospace;font-size:10px;color:var(--faint);margin-top:12px;letter-spacing:.3px;line-height:1.5;}
+
+/* The science callout */
+.sci-box{background:var(--sky-bg);border:1px solid rgba(43,127,168,0.18);border-radius:13px;padding:16px 20px;margin:16px 0;font-size:13px;color:var(--ink2);line-height:1.6;}
+.sci-box .lab{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--sky);font-weight:600;margin-bottom:6px;}
+.sci-box b{color:var(--ink);}
+
+/* Habit recipe card */
+.recipe{background:var(--paper);border:1px solid var(--line);border-radius:15px;padding:0;margin-bottom:13px;overflow:hidden;}
+.recipe-head{padding:18px 22px;display:flex;align-items:center;gap:14px;border-left:4px solid var(--accent,var(--forest));}
+.recipe-icon{font-size:24px;flex-shrink:0;}
+.recipe-htext{flex:1;}
+.recipe-htext h3{font-family:'Fraunces',serif;font-size:17px;font-weight:600;color:var(--ink);line-height:1.2;}
+.recipe-htext .time{font-family:'Geist Mono',monospace;font-size:10px;color:var(--mut);letter-spacing:.5px;margin-top:3px;}
+.recipe-toggle{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line2);background:var(--cream);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0;font-size:16px;color:var(--mut);}
+.recipe.open .recipe-toggle{background:var(--forest);border-color:var(--forest);color:#fff;transform:rotate(45deg);}
+.recipe-body{max-height:0;overflow:hidden;transition:max-height .3s ease;}
+.recipe.open .recipe-body{max-height:800px;}
+.recipe-inner{padding:0 22px 20px;}
+.anchor-row{display:flex;align-items:stretch;gap:0;margin-bottom:14px;border-radius:10px;overflow:hidden;border:1px solid var(--line);}
+.anchor-part{padding:12px 15px;font-size:13px;flex:1;}
+.anchor-after{background:var(--cream);color:var(--mut);}
+.anchor-after .lbl{font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--faint);display:block;margin-bottom:3px;}
+.anchor-after b{color:var(--ink2);font-weight:600;}
+.anchor-then{background:var(--forest-bg);color:var(--forest-d);}
+.anchor-then .lbl{font-family:'Geist Mono',monospace;font-size:9px;letter-spacing:1px;color:var(--forest);display:block;margin-bottom:3px;}
+.anchor-then b{color:var(--forest-d);font-weight:600;}
+.recipe-why{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:8px;}
+.recipe-why b{color:var(--ink);}
+.recipe-scale{font-size:12px;color:var(--mut);font-style:italic;padding-left:12px;border-left:2px solid var(--line2);line-height:1.5;}
+.recipe-celebrate{margin-top:12px;font-size:12.5px;color:var(--gold-d);background:var(--gold-bg);padding:10px 13px;border-radius:9px;}
+.recipe-celebrate b{font-weight:600;}
+
+/* Decision tiers */
+.tier{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:19px 22px;margin-bottom:11px;border-left:4px solid var(--accent);}
+.tier-head{display:flex;align-items:center;gap:11px;margin-bottom:11px;flex-wrap:wrap;}
+.tier-badge{font-family:'Geist Mono',monospace;font-size:10px;font-weight:600;padding:4px 11px;border-radius:20px;letter-spacing:.8px;}
+.tier h3{font-size:15px;font-weight:600;color:var(--ink);}
+.examples{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px;}
+.ex-chip{font-size:11px;background:var(--cream);border:1px solid var(--line);border-radius:6px;padding:3px 10px;color:var(--mut);}
+.tier .rule{font-size:13px;color:var(--ink2);line-height:1.55;}
+.tier .rule b{color:var(--ink);}
+
+/* Recovery checklist */
+.rec-section{margin-bottom:22px;}
+.rec-section h3{font-family:'Fraunces',serif;font-size:18px;font-weight:600;margin-bottom:13px;display:flex;align-items:center;gap:10px;}
+.rec-section h3 .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.chk{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;background:var(--paper);border:1px solid var(--line);border-radius:11px;cursor:pointer;transition:all .15s;margin-bottom:8px;}
+.chk:hover{border-color:var(--line2);}
+.chk.done{border-color:var(--forest);background:var(--forest-bg);}
+.cb{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line2);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .15s;background:var(--cream);}
+.chk.done .cb{background:var(--forest);border-color:var(--forest);}
+.cb svg{width:12px;height:12px;opacity:0;transition:opacity .15s;}
+.chk.done .cb svg{opacity:1;}
+.chk-body .ct{font-size:14px;font-weight:500;color:var(--ink);}
+.chk-body .cd{font-size:12px;color:var(--mut);margin-top:3px;line-height:1.5;}
+.chk.done .chk-body .ct{color:var(--forest-d);}
+
+/* Sprint */
+.sf{background:var(--paper);border:1px solid var(--line);border-radius:13px;padding:18px 20px;margin-bottom:12px;}
+.sf .sf-label{font-family:'Geist Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--forest);margin-bottom:8px;font-weight:600;}
+.sf h4{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:10px;}
+.sf textarea{width:100%;background:var(--cream);border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;line-height:1.6;resize:vertical;min-height:58px;}
+.sf textarea:focus{outline:none;border-color:var(--forest);}
+.sf textarea::placeholder{color:var(--faint);}
+.sprint-stars{display:flex;gap:6px;flex-wrap:wrap;}
+.star-day{display:flex;flex-direction:column;align-items:center;gap:5px;background:var(--cream);border:1px solid var(--line);border-radius:9px;padding:9px 13px;font-family:'Geist Mono',monospace;font-size:10px;color:var(--mut);}
+.star-day select{background:var(--paper);border:1px solid var(--line);border-radius:6px;color:var(--forest-d);font-family:'Geist Mono',monospace;font-size:15px;padding:2px 5px;text-align:center;cursor:pointer;width:46px;font-weight:600;}
+
+/* Buttons */
+.btn{display:block;width:100%;padding:16px;background:var(--forest);color:#fff;border:none;border-radius:11px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;margin-top:16px;}
+.btn:hover{background:var(--forest-d);transform:translateY(-1px);}
+.share-row{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0 4px;}
+.share-btn{flex:1;min-width:150px;padding:14px 16px;border-radius:11px;border:1px solid var(--line2);background:var(--paper);color:var(--ink);font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.share-btn:hover{border-color:var(--forest);color:var(--forest-d);transform:translateY(-1px);}
+.share-btn.copied{border-color:var(--forest);color:var(--forest);}
+.share-note{font-size:11px;color:var(--mut);text-align:center;margin-top:8px;font-family:'Geist Mono',monospace;letter-spacing:.3px;}
+
+/* CTA */
+.cta-banner{background:linear-gradient(135deg,var(--forest-bg),var(--paper));border:1px solid rgba(31,107,79,0.15);border-radius:15px;padding:24px;margin-top:26px;}
+.cta-banner h4{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--forest-d);margin-bottom:8px;}
+.cta-banner p{font-size:13.5px;color:var(--ink2);line-height:1.6;}
+.cta-banner a{color:var(--forest-d);font-weight:600;text-decoration:underline;text-underline-offset:2px;}
+
+footer{padding:34px 0 12px;text-align:center;color:var(--mut);font-size:11px;border-top:1px solid var(--line);margin-top:42px;}
+footer .b{font-family:'Geist Mono',monospace;color:var(--forest);letter-spacing:2.5px;margin-bottom:6px;font-weight:600;}
+
+@media print{body{background:#fff;}body::before{display:none;}.nav,.share-row,.share-note,.btn{display:none;}.panel{display:block!important;border-top:1px solid #ddd;padding-top:20px;page-break-inside:avoid;}}
+@media(max-width:560px){.nav button{font-size:11px;min-width:90px;}.dcell{min-width:48px;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div class="brand">RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div class="hero-tag">★ ENGINEERING LEADER EDITION · BUILT ON BEHAVIOR SCIENCE</div>
+  <h1>The Engineering Leader's<br><em>Cognitive Stack</em></h1>
+  <p class="sub">Not another productivity guide you read once and forget. A working system of five tiny daily habits — each anchored to something you already do — that compound into sustained cognitive performance. You get your first win in the next five minutes.</p>
+  <div class="promise"><b>The promise:</b> Five habits, each under two minutes to start. Do one today and you've already begun. The science is clear — consistency beats intensity, and tiny beats ambitious. This tool is built to make showing up the easy part.</div>
+
+  <div class="today">
+    <div class="today-top">
+      <div class="today-h">Today's Stack</div>
+      <div class="streak-badge"><span class="flame">🔥</span><span id="streakNum">0</span>-day streak</div>
+    </div>
+    <div class="today-sub">Tap each habit as you complete it. Don't aim for all five on day one — aim for <b>one</b>. That's a win.</div>
+    <div class="day1-cells" id="dayCells"></div>
+    <div class="today-progress">
+      <div class="tp-bar"><div class="tp-fill" id="tpFill"></div></div>
+      <div class="tp-txt" id="tpTxt">0 / 5 today</div>
+    </div>
+    <div class="win-msg" id="winMsg"></div>
+  </div>
+</header>
+
+<div class="nav">
+  <button class="on" onclick="tab(0,this)"><span class="num">01</span>Start Here</button>
+  <button onclick="tab(1,this)"><span class="num">02</span>Peak Window</button>
+  <button onclick="tab(2,this)"><span class="num">03</span>Decisions</button>
+  <button onclick="tab(3,this)"><span class="num">04</span>Recovery</button>
+  <button onclick="tab(4,this)"><span class="num">05</span>Sunday Sprint</button>
+</div>
+
+<!-- MODULE 1: START HERE -->
+<div class="panel on" id="p0">
+  <div class="panel-head">
+    <div class="panel-label">MODULE 01 · THE FIVE HABITS</div>
+    <h2>Start ridiculously small</h2>
+    <p>Each habit below is designed as an <b>if-then recipe</b>: anchored to a routine you already have, scaled so small it takes under two minutes, and paired with a moment of acknowledgment. This is how habits actually stick — not through willpower, but through design.</p>
+    <div class="src-note">GROUNDED IN · Fogg Behavior Model (Stanford Behavior Design Lab) · Implementation intentions (Gollwitzer) · Lally et al. (2010): automaticity forms over ~59–66 days, not 21 · Identity-based habits (Clear)</div>
+  </div>
+
+  <div class="sci-box">
+    <div class="lab">WHY TINY WINS</div>
+    A 2025 study found that leaders who began with <b>minimal viable habits</b> and scaled up gradually were <b>2.7× more likely</b> to maintain them long-term than those who started ambitious. Lower activation energy means more repetitions — and every repetition of anchor → behavior → acknowledgment builds the neural pathway. Tiny habits win because they actually happen.
+  </div>
+
+  <div id="recipes"></div>
+
+  <div class="cta-banner">
+    <h4>Your only job today</h4>
+    <p>Pick the one habit whose anchor happens earliest in your day. Do just that one, the moment its anchor fires. Tap it in Today's Stack above. That single tap is day one of your streak — and the science says day one done is the hardest and most important rep you'll make.</p>
+  </div>
+</div>
+
+<!-- MODULE 2: PEAK WINDOW -->
+<div class="panel" id="p1">
+  <div class="panel-head">
+    <div class="panel-label">MODULE 02 · DAILY ARCHITECTURE</div>
+    <h2>The Peak Window Protocol</h2>
+    <p>Once the tiny habits are landing, this is the structure they build toward. Your brain has a 90-minute peak cognitive window in the morning — this protocol protects it and sequences your day around your biology, not your calendar.</p>
+    <div class="src-note">GROUNDED IN · Ultradian rhythms (Lavie, 1982) · Decision fatigue (Baumeister) · Zeigarnik effect (1927)</div>
+  </div>
+  <div id="peakBlocks"></div>
+  <div class="cta-banner">
+    <h4>Don't adopt this all at once</h4>
+    <p>That's the mistake that breaks the system in week two. The Module 01 habits build toward this structure one piece at a time. Protect the morning peak window first — it's the single highest-leverage block. Add the rest once that one holds.</p>
+  </div>
+</div>
+
+<!-- MODULE 3: DECISIONS -->
+<div class="panel" id="p2">
+  <div class="panel-head">
+    <div class="panel-label">MODULE 03 · DECISION ARCHITECTURE</div>
+    <h2>The Decision Firewall</h2>
+    <p>Engineering leaders treat all decisions at the same cognitive cost. They don't have the same cost. Tier them — so your highest-quality cognitive resource goes only where it matters.</p>
+    <div class="src-note">GROUNDED IN · Decision fatigue / ego depletion (Baumeister, 2011) · Prefrontal cortex resource limits</div>
+  </div>
+  <div class="tier" style="--accent:var(--clay)">
+    <div class="tier-head"><span class="tier-badge" style="background:var(--clay-bg);color:var(--clay-d)">TIER 1 · STRATEGIC</span><h3>Peak-window only. Never in meetings.</h3></div>
+    <div class="examples"><span class="ex-chip">Architecture choices</span><span class="ex-chip">Technology bets</span><span class="ex-chip">Hiring</span><span class="ex-chip">Build vs buy</span></div>
+    <div class="rule"><b>Rule:</b> Decided only during your morning peak window. Sleep-on-it rule for anything with 3+ month impact. Meetings are for alignment, not deciding. Write your reasoning before you commit.</div>
+  </div>
+  <div class="tier" style="--accent:var(--gold)">
+    <div class="tier-head"><span class="tier-badge" style="background:var(--gold-bg);color:var(--gold-d)">TIER 2 · TACTICAL</span><h3>24-hour rule. Async first.</h3></div>
+    <div class="examples"><span class="ex-chip">Technical approach</span><span class="ex-chip">Process changes</span><span class="ex-chip">Tool evaluation</span><span class="ex-chip">Scope calls</span></div>
+    <div class="rule"><b>Rule:</b> Default to async, give yourself 24 hours unless truly time-critical. Most Tier-2 calls can be delegated to a senior with the right framing from you. Reserve your attention for the ones only you can make.</div>
+  </div>
+  <div class="tier" style="--accent:var(--forest)">
+    <div class="tier-head"><span class="tier-badge" style="background:var(--forest-bg);color:var(--forest-d)">TIER 3 · OPERATIONAL</span><h3>Batch. Time-box 3 min. Default yes.</h3></div>
+    <div class="examples"><span class="ex-chip">PR approvals</span><span class="ex-chip">Access requests</span><span class="ex-chip">Calendar invites</span><span class="ex-chip">Slack questions</span></div>
+    <div class="rule"><b>Rule:</b> Batch into one midday block. Time-box each at 3 minutes; if longer, re-tier it. Default to "yes unless a strong reason not to." Twenty scattered Tier-3 decisions deplete the same resource as twenty Tier-1 ones.</div>
+  </div>
+  <div class="sci-box" style="margin-top:16px;">
+    <div class="lab">THE DIAGNOSTIC</div>
+    When a decision lands, ask: <b>"What's the cost if this is wrong?"</b> Hours → Tier 3. Days–weeks → Tier 2. Months–years → Tier 1. The Module 01 habit "Tier one decision before lunch" trains this until it's automatic.
+  </div>
+</div>
+
+<!-- MODULE 4: RECOVERY -->
+<div class="panel" id="p3">
+  <div class="panel-head">
+    <div class="panel-label">MODULE 04 · RECOVERY ARCHITECTURE</div>
+    <h2>The Recovery Stack</h2>
+    <p>Most systems tell you to do more. This one tells you what to stop. Recovery isn't rest from work — it's the mechanism by which cognitive performance compounds. Check what's already true; each one you add is a win.</p>
+    <div class="src-note">GROUNDED IN · Walker (2017) sleep & prefrontal function · Default mode network · Gloria Mark (UC Irvine): 23-min attention recovery per interruption</div>
+  </div>
+  <div class="rec-section">
+    <h3><span class="dot" style="background:var(--forest)"></span>The 3 that move the needle most</h3>
+    <div id="recKeep"></div>
+  </div>
+  <div class="rec-section">
+    <h3><span class="dot" style="background:var(--clay)"></span>What to eliminate</h3>
+    <div id="recCut"></div>
+  </div>
+  <div class="cta-banner" id="recCta">
+    <h4>Recovery score: <span id="recN">0/7</span></h4>
+    <p>Every practice you check is a compounding advantage. You don't need all seven at once — add one per week. Consistency over completeness.</p>
+  </div>
+</div>
+
+<!-- MODULE 5: SUNDAY SPRINT -->
+<div class="panel" id="p4">
+  <div class="panel-head">
+    <div class="panel-label">MODULE 05 · THE WEEKLY RITUAL</div>
+    <h2>The Sunday Sprint</h2>
+    <p>30 minutes every Sunday that makes the whole system self-correcting. Not planning — designing. This is the review loop that turns five habits into a compounding system.</p>
+    <div class="src-note">GROUNDED IN · Implementation intentions (Gollwitzer, 1999) · Self-monitoring & progress tracking research · Weekly review as a keystone habit</div>
+  </div>
+  <div class="sf">
+    <div class="sf-label">STEP 1 · ENERGY AUDIT</div>
+    <h4>Rate your energy each day last week (1–5)</h4>
+    <div class="sprint-stars">
+      <div class="star-day"><span>MON</span><select id="d0"><option>—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+      <div class="star-day"><span>TUE</span><select id="d1"><option>—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+      <div class="star-day"><span>WED</span><select id="d2"><option>—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+      <div class="star-day"><span>THU</span><select id="d3"><option>—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+      <div class="star-day"><span>FRI</span><select id="d4"><option>—</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></div>
+    </div>
+  </div>
+  <div class="sf"><div class="sf-label">STEP 2 · DRAIN ANALYSIS</div><h4>Lowest-energy day, and what caused it?</h4><textarea id="drain" placeholder="e.g. Wednesday — back-to-back meetings 9–5, no deep work block. Felt responsive but not effective."></textarea></div>
+  <div class="sf"><div class="sf-label">STEP 3 · PEAK WINDOW LOCK</div><h4>Monday's peak-window priority sentence</h4><textarea id="priority" placeholder="The one thing that moves the needle most this week is..."></textarea></div>
+  <div class="sf"><div class="sf-label">STEP 4 · TIER-1 DECISIONS</div><h4>The 1–3 Tier-1 decisions needing peak-window time this week</h4><textarea id="decisions" placeholder="1. Architecture decision on the memory layer&#10;2. Senior ML hire&#10;3. Build vs buy on eval framework"></textarea></div>
+  <div class="sf"><div class="sf-label">STEP 5 · ONE SUBTRACTION</div><h4>One recurring drain you'll remove this week</h4><textarea id="subtract" placeholder="e.g. Slack notifications off 9am–12pm daily. Check at 12 and 4 only."></textarea></div>
+
+  <button class="btn" onclick="saveSprint()">Save this week's design</button>
+  <div class="share-row">
+    <button class="share-btn" onclick="copyResult(this)">📋 Copy my weekly design</button>
+    <button class="share-btn" onclick="window.print()">📄 Save as PDF</button>
+  </div>
+  <div class="share-note" id="sprintSaved" style="display:none;color:var(--forest);">✓ SAVED LOCALLY — IT'LL BE HERE WHEN YOU RETURN NEXT SUNDAY</div>
+
+  <div class="cta-banner">
+    <h4>The compounding effect</h4>
+    <p>Week 1 you remove one drain. Week 2, another. Week 8, your week is structurally different — not because you added more, but because you subtracted specifically. That's how cognitive performance compounds. <a href="mailto:quality.architect.pro@gmail.com?subject=Leadership Intensive" target="_blank">Rynaut runs 1:1 leadership intensives</a> for teams that want to go deeper.</p>
+  </div>
+</div>
+
+</div>
+
+<footer>
+  <div class="b">RYNAUT · ARCHITECTING AUTOMATION</div>
+  <div>© 2026 Rynaut. Individual $39 · Team $99 (up to 10). Runs locally — your streak and notes never leave this file.<br>Built on: Fogg Behavior Model · Lally et al. 2010 · Gollwitzer · Clear · Walker 2017 · Baumeister 2011 · Lavie 1982.</div>
+</footer>
+
+<script>
+/* ---------- DATA ---------- */
+const HABITS=[
+  {id:"sigh",icon:"🌬️",name:"Reset breath",time:"UNDER 1 MIN",accent:"var(--sky)",
+   after:"After I sit down at my desk",then:"I take 3 physiological sighs before opening anything",
+   why:"<b>The anchor is sitting down — something you already do every day.</b> Two inhales through the nose, one long exhale. Three rounds. It down-regulates the stress response before the day's noise hits, so you start from calm instead of reactive.",
+   scale:"Scaled-down version if you're slammed: one single sigh. The point is the rep, not the duration.",
+   celebrate:"Acknowledge it: a quiet \"good\" to yourself. Fogg's research shows the immediate positive emotion is what wires the habit in — not the behaviour itself."},
+  {id:"sentence",icon:"🎯",name:"One-sentence priority",time:"UNDER 2 MIN",accent:"var(--forest)",
+   after:"After I make my morning coffee/tea",then:"I write one sentence: the one thing that moves the needle today",
+   why:"<b>Not a to-do list — one sentence.</b> Anchored to your existing coffee ritual. This pre-loads your prefrontal cortex with the day's real priority before Slack and email hijack your attention. The single highest-leverage two minutes in your day.",
+   scale:"Too foggy to know the priority? Write \"Today I protect 90 minutes for ___.\" That counts.",
+   celebrate:"When you write it, you've already won the morning. Notice that feeling — that's the dopamine tagging the habit as worth repeating."},
+  {id:"peak",icon:"🧱",name:"Protect 25 minutes",time:"STARTS AT 25 MIN",accent:"var(--gold)",
+   after:"After I write my priority sentence",then:"I protect one 25-minute block of deep work, phone in another room",
+   why:"<b>Start at 25 minutes, not 90.</b> The full peak window is 90 minutes, but the habit starts tiny. One protected block — no Slack, no meetings, phone physically away. Below 25 minutes, context-switching overhead eats the value, so 25 is the floor.",
+   scale:"Can't get 25 today? Protect 10. A protected 10 beats an interrupted 90.",
+   celebrate:"At the end of the block, tick it here. Over weeks you'll naturally extend it toward the full 90-minute window in Module 02."},
+  {id:"tier",icon:"⚖️",name:"Tier one decision",time:"UNDER 1 MIN",accent:"var(--clay)",
+   after:"After I eat lunch",then:"I tier the next decision in front of me: Tier 1, 2, or 3",
+   why:"<b>Anchored to lunch — a reliable daily cue.</b> Just one decision. Ask \"what's the cost if this is wrong?\" Hours → Tier 3 (batch it). Days → Tier 2 (24-hour rule). Months → Tier 1 (peak window only). Done enough times, tiering becomes automatic and decision fatigue drops sharply.",
+   scale:"The minimum: just name the tier out loud. You don't have to act on it differently yet — naming builds the reflex.",
+   celebrate:"Each time you tier instead of react, you're protecting tomorrow's cognitive capacity. That's the win."},
+  {id:"shutdown",icon:"🌙",name:"Close the loops",time:"UNDER 2 MIN",accent:"var(--plum)",
+   after:"After I close my laptop for the day",then:"I write 3 things I completed today (done, not to-do)",
+   why:"<b>The anchor is closing your laptop.</b> Write three things you finished — completed, not pending. The Zeigarnik effect means your brain keeps processing open loops overnight; writing completions signals closure, which protects your sleep and your recovery.",
+   scale:"Exhausted? Write one. One completed thing, acknowledged, still closes the day cleanly.",
+   celebrate:"This is the habit that protects your evenings from work rumination. Notice the lighter feeling — that's the loop closing."},
+];
+
+const PEAK=[
+  {accent:"var(--gold)",time:"MORNING PEAK · 90 MIN",title:"Deep Architecture Block",
+   pts:["First 10 min: no phone, no Slack. Reset breath. Use the natural morning cortisol for clarity, not email.","10–20 min: write your one-sentence priority.","20–90 min: deep work only — architecture, design docs, hard problems. Phone in another room.","90-min mark: hard stop, 10-min screen-free walk. This is when the brain consolidates."]},
+  {accent:"var(--sky)",time:"MIDDAY · 60 MIN",title:"Decision & Approval Batch",
+   pts:["Batch all Tier-2/3 decisions here — don't let them scatter.","Time-box each at 3 minutes; if longer, it's Tier 1 → tomorrow's peak window.","Async-first: anything not needing you live goes to a written thread."]},
+  {accent:"var(--forest)",time:"AFTERNOON · 3 HRS",title:"Collaboration Window",
+   pts:["All meetings, 1:1s, reviews here — cognitive demand is lower, social work fits.","No architecture or strategic decisions in this window. Defer them to tomorrow's peak.","Buffer the last 30 min: clear async, transition toward shutdown."]},
+  {accent:"var(--plum)",time:"EVENING · 15 MIN",title:"Shutdown Protocol",
+   pts:["Write 3 things completed today (done, not to-do) — closes open loops.","Write tomorrow's priority sentence tonight; your brain pre-processes it overnight.","Physical shutdown trigger: close laptop, change rooms. Same cue daily builds the response.","No work inputs after the trigger — every late Slack check degrades sleep architecture."]},
+];
+
+const REC_KEEP=[
+  {t:"Consistent wake time, ±30 min, including weekends",d:"The single highest-ROI cognitive lever. Each hour of sleep debt cuts prefrontal function ~13% (Walker, 2017). Consistency matters more than duration."},
+  {t:"90 min of deliberate non-work daily",d:"Not scrolling — movement, cooking, music, conversation. Default mode network activation is where your best solutions actually surface."},
+  {t:"Weekly 30-min energy audit (reviewing, not planning)",d:"The feedback loop that makes the whole system self-correct. This is Module 05."},
+];
+const REC_CUT=[
+  {t:"Notification-driven work",d:"The #1 cognitive killer of 2026. Each interruption costs ~23 min of attention recovery (Gloria Mark, UC Irvine). Check on a schedule, not a reflex."},
+  {t:"Meeting fragmentation",d:"Three 20-min gaps ≠ one 60-min block. Deep-work ramp-up is 15–20 min; fragmented calendars produce near-zero deep output."},
+  {t:"Context switches under 25 minutes",d:"Below this threshold you spend all your energy on transition overhead, not the work. Protect any block for 25 min minimum."},
+  {t:"Work inputs after the shutdown trigger",d:"Every post-shutdown Slack check reactivates the prefrontal cortex and degrades sleep. The \"just one check\" habit is the most common self-sabotage."},
+];
+
+/* ---------- STATE ---------- */
+const SVG_CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+let state={done:{},streak:0,lastDate:null,recovery:{}};
+try{const s=JSON.parse(localStorage.getItem('rynaut_cogstack')||'{}');if(s.streak!==undefined)state=Object.assign(state,s);}catch(e){}
+
+function todayKey(){return new Date().toISOString().slice(0,10);}
+function saveState(){try{localStorage.setItem('rynaut_cogstack',JSON.stringify(state));}catch(e){}}
+
+/* ---------- RENDER ---------- */
+function tab(i,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('on'));
+  document.getElementById('p'+i).classList.add('on');el.classList.add('on');
+}
+
+// Today cells
+function renderCells(){
+  const tk=todayKey();
+  const todayDone=state.done[tk]||{};
+  document.getElementById('dayCells').innerHTML=HABITS.map(h=>
+    '<div class="dcell '+(todayDone[h.id]?'done':'')+'" onclick="toggleHabit(\''+h.id+'\')"><div class="ic">'+h.icon+'</div><div class="nm">'+h.name+'</div><div class="chk">'+(todayDone[h.id]?'✓ DONE':'tap')+'</div></div>'
+  ).join('');
+  const n=Object.values(todayDone).filter(Boolean).length;
+  document.getElementById('tpFill').style.width=(n/HABITS.length*100)+'%';
+  document.getElementById('tpTxt').textContent=n+' / '+HABITS.length+' today';
+  document.getElementById('streakNum').textContent=state.streak;
+}
+function toggleHabit(id){
+  const tk=todayKey();
+  if(!state.done[tk])state.done[tk]={};
+  const wasEmpty=Object.values(state.done[tk]).filter(Boolean).length===0;
+  state.done[tk][id]=!state.done[tk][id];
+  const nowCount=Object.values(state.done[tk]).filter(Boolean).length;
+  // streak logic: first completion of the day counts toward streak
+  if(wasEmpty && nowCount>0){
+    const y=new Date(Date.now()-86400000).toISOString().slice(0,10);
+    if(state.lastDate===y)state.streak++;
+    else if(state.lastDate!==tk)state.streak=1;
+    state.lastDate=tk;
+    showWin(nowCount);
+  } else if(nowCount>0){
+    showWin(nowCount);
+  }
+  if(nowCount===0 && state.lastDate===tk){/* keep streak; don't punish unchecking */}
+  saveState();renderCells();
+}
+function showWin(n){
+  const msgs={
+    1:"<b>Day "+state.streak+" — you're on the board.</b> That first tap is the hardest and most important rep. The research is unambiguous: showing up once beats planning to do five. See you tomorrow.",
+    2:"<b>Two today.</b> You're past \"trying\" and into \"doing.\" Notice this feeling — it's the dopamine tagging the habit as worth repeating.",
+    3:"<b>Three habits. Strong day.</b> This is what compounding looks like up close. You're not doing more work — you're doing it in a way that protects your capacity.",
+    4:"<b>Four. You're running the system.</b> Most people never get here. Don't force the fifth if today doesn't allow it — consistency beats completeness.",
+    5:"<b>Full stack. All five.</b> Exceptional — but here's the real test: can you tap one tomorrow? The streak, not the perfect day, is what rewires the brain."
+  };
+  const el=document.getElementById('winMsg');
+  el.innerHTML=msgs[n]||msgs[5];
+  el.classList.add('show');
+}
+
+// Recipes
+function renderRecipes(){
+  document.getElementById('recipes').innerHTML=HABITS.map((h,i)=>
+    '<div class="recipe" style="--accent:'+h.accent+'" id="recipe'+i+'">'+
+      '<div class="recipe-head" onclick="toggleRecipe('+i+')">'+
+        '<div class="recipe-icon">'+h.icon+'</div>'+
+        '<div class="recipe-htext"><h3>'+h.name+'</h3><div class="time">'+h.time+'</div></div>'+
+        '<div class="recipe-toggle">+</div>'+
+      '</div>'+
+      '<div class="recipe-body"><div class="recipe-inner">'+
+        '<div class="anchor-row"><div class="anchor-part anchor-after"><span class="lbl">AFTER (your anchor)</span><b>'+h.after+'</b></div><div class="anchor-part anchor-then"><span class="lbl">THEN (tiny habit)</span><b>'+h.then+'</b></div></div>'+
+        '<div class="recipe-why">'+h.why+'</div>'+
+        '<div class="recipe-scale">'+h.scale+'</div>'+
+        '<div class="recipe-celebrate">🎉 '+h.celebrate+'</div>'+
+      '</div></div>'+
+    '</div>'
+  ).join('');
+}
+function toggleRecipe(i){document.getElementById('recipe'+i).classList.toggle('open');}
+
+// Peak blocks
+function renderPeak(){
+  document.getElementById('peakBlocks').innerHTML=PEAK.map(b=>
+    '<div class="tier" style="--accent:'+b.accent+'"><div class="tier-head"><span class="tier-badge" style="background:var(--cream);color:'+b.accent+'">'+b.time+'</span><h3>'+b.title+'</h3></div><div class="rule"><ul style="list-style:none;display:flex;flex-direction:column;gap:6px;">'+b.pts.map(p=>'<li style="padding-left:16px;position:relative;"><span style="position:absolute;left:0;color:'+b.accent+';">→</span>'+p+'</li>').join('')+'</ul></div></div>'
+  ).join('');
+}
+
+// Recovery
+function renderRec(){
+  document.getElementById('recKeep').innerHTML=REC_KEEP.map((r,i)=>recChk('k'+i,r)).join('');
+  document.getElementById('recCut').innerHTML=REC_CUT.map((r,i)=>recChk('c'+i,r)).join('');
+  updateRecScore();
+}
+function recChk(id,r){
+  return '<div class="chk '+(state.recovery[id]?'done':'')+'" onclick="toggleRec(\''+id+'\')"><div class="cb">'+SVG_CHECK+'</div><div class="chk-body"><div class="ct">'+r.t+'</div><div class="cd">'+r.d+'</div></div></div>';
+}
+function toggleRec(id){state.recovery[id]=!state.recovery[id];saveState();renderRec();}
+function updateRecScore(){
+  const total=REC_KEEP.length+REC_CUT.length;
+  const done=Object.values(state.recovery).filter(Boolean).length;
+  document.getElementById('recN').textContent=done+'/'+total;
+}
+
+// Sprint
+function saveSprint(){
+  state.sprint={drain:val('drain'),priority:val('priority'),decisions:val('decisions'),subtract:val('subtract'),days:[0,1,2,3,4].map(i=>val('d'+i))};
+  saveState();
+  const el=document.getElementById('sprintSaved');el.style.display='block';
+}
+function val(id){return document.getElementById(id).value;}
+function loadSprint(){
+  const s=state.sprint;if(!s)return;
+  ['drain','priority','decisions','subtract'].forEach(k=>{if(s[k])document.getElementById(k).value=s[k];});
+  if(s.days)s.days.forEach((v,i)=>{const el=document.getElementById('d'+i);if(el&&v)el.value=v;});
+}
+function copyResult(btn){
+  const txt='MY COGNITIVE STACK — WEEKLY DESIGN\n'
+    +'Streak: '+state.streak+' days\n'
+    +'This week\'s priority: '+(val('priority')||'—')+'\n'
+    +'One subtraction: '+(val('subtract')||'—')
+    +'\n\nThe Engineering Leader\'s Cognitive Stack · Rynaut · Architecting Automation';
+  navigator.clipboard.writeText(txt).then(()=>{const o=btn.textContent;btn.textContent='✓ Copied';btn.classList.add('copied');setTimeout(()=>{btn.textContent=o;btn.classList.remove('copied');},1800);});
+}
+
+/* ---------- INIT ---------- */
+renderCells();renderRecipes(
