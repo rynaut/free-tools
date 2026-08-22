@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Agent Testing Contract Checker — Rynaut</title>
+<meta name="description" content="8 questions that surface exactly where your AI agent's test coverage breaks down — and what to do about each gap before you ship to production.">
+<link rel="canonical" href="https://rynaut.gumroad.com/l/agent-testing-contract-checker">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rynaut">
+<meta property="og:title" content="Agent Testing Contract Checker — Rynaut">
+<meta property="og:description" content="Find exactly where your AI agent's test coverage breaks down before you ship to production. Free.">
+<meta property="og:image" content="https://rynaut.github.io/free-tools/09-agent-testing-contract-checker-cover.png">
+<meta property="og:url" content="https://rynaut.gumroad.com/l/agent-testing-contract-checker">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Agent Testing Contract Checker — Rynaut">
+<meta name="twitter:description" content="Find exactly where your AI agent's test coverage breaks down before you ship to production. Free.">
+<meta name="twitter:image" content="https://rynaut.github.io/free-tools/09-agent-testing-contract-checker-cover.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
 :root{
@@ -118,7 +130,7 @@ footer .b{font-family:'JetBrains Mono',monospace;color:var(--teal);letter-spacin
   </div>
   <div class="email-box">
     <h4>Get the full Agent Testing Playbook</h4>
-    <p>Rynaut's agent testing framework — contract templates, CI pipeline configs, and the full evaluation layer checklist. Free.</p>
+    <p>Rynaut's agent testing framework — contract templates, CI pipeline configs, and the full evaluation layer checklist. Free. Shipping LangGraph agents specifically? The <a href="https://rynaut.gumroad.com/l/langgraph-zbr" target="_blank">LangGraph Zero Blast Radius Checklist</a> ($19) includes a pytest + CI enforcement pack this free checker doesn't.</p>
     <div class="email-row">
       <input type="email" class="email-input" id="emailInput" placeholder="your@email.com" />
       <button class="btn-send" onclick="submitEmail()">Send it →</button>
@@ -127,7 +139,7 @@ footer .b{font-family:'JetBrains Mono',monospace;color:var(--teal);letter-spacin
   </div>
   <button class="btn reset" onclick="restart()">↩ Retake</button>
 </div>
-<footer><div class="b">RYNAUT · ARCHITECTING AUTOMATION</div><div>© 2025 Rynaut. Zero Blast Radius · Execution-Layer Architecture · Orchestrator Trust Surface</div></footer>
+<footer><div class="b">RYNAUT · ARCHITECTING AUTOMATION</div><div>© 2026 Rynaut. Zero Blast Radius · Execution-Layer Architecture · Orchestrator Trust Surface</div></footer>
 </div>
 <script>
 const Qs=[
@@ -212,11 +224,30 @@ function copyResults(){
 }
 
 function submitEmail(){
-  const v=document.getElementById('emailInput').value.trim();
-  if(!v||!v.includes('@')){document.getElementById('emailInput').style.borderColor='var(--red)';return;}
-  document.getElementById('emailInput').style.display='none';
-  document.querySelector('.btn-send').style.display='none';
-  document.getElementById('emailOk').style.display='block';
+  const input=document.getElementById('emailInput');
+  const btn=document.querySelector('.btn-send');
+  const v=input.value.trim();
+  if(!v||!v.includes('@')){input.style.borderColor='var(--red)';return;}
+  input.style.borderColor='';
+  btn.disabled=true;btn.textContent='Sending…';
+  fetch('https://formsubmit.co/ajax/quality.architect.pro@gmail.com',{
+    method:'POST',
+    headers:{'Content-Type':'application/json','Accept':'application/json'},
+    body:JSON.stringify({
+      email:v,
+      _subject:'Agent Testing Playbook request',
+      source:'agent-testing-contract-checker'
+    })
+  }).then(function(r){if(!r.ok)throw new Error('bad response');return r.json();})
+    .then(function(){
+      input.style.display='none';
+      btn.style.display='none';
+      document.getElementById('emailOk').style.display='block';
+    })
+    .catch(function(){
+      btn.disabled=false;btn.textContent='Send it →';
+      input.style.borderColor='var(--red)';
+    });
 }
 
 function restart(){
