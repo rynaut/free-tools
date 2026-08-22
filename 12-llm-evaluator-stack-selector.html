@@ -4,6 +4,18 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LLM Evaluator Stack Selector — Rynaut</title>
+<meta name="description" content="5 questions. Get the exact eval stack for your team, scale, and regulatory context — with tool coverage breakdown and cost estimates.">
+<link rel="canonical" href="https://rynaut.gumroad.com/l/llm-evaluator">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Rynaut">
+<meta property="og:title" content="LLM Evaluator Stack Selector — Rynaut">
+<meta property="og:description" content="5 questions to the exact eval stack for your team, scale and regulatory context — covering tracing, CI testing, RAG quality and adversarial red-teaming. 6 tools compared. Free.">
+<meta property="og:image" content="https://rynaut.github.io/free-tools/12-llm-evaluator-stack-selector-cover.png">
+<meta property="og:url" content="https://rynaut.gumroad.com/l/llm-evaluator">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="LLM Evaluator Stack Selector — Rynaut">
+<meta name="twitter:description" content="5 questions to the exact eval stack for your team, scale and regulatory context — covering tracing, CI testing, RAG quality and adversarial red-teaming. 6 tools compared. Free.">
+<meta name="twitter:image" content="https://rynaut.github.io/free-tools/12-llm-evaluator-stack-selector-cover.png">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap');
 :root{
@@ -85,14 +97,14 @@ footer .b{font-family:'JetBrains Mono',monospace;color:var(--teal);letter-spacin
 <div class="wrap">
 <header>
   <div class="brand"><span class="dot"></span>RYNAUT · ARCHITECTING AUTOMATION</div>
-  <div class="tg">$19 · LLM EVALUATIONS</div>
+  <div class="tg">FREE · LLM EVALUATIONS</div>
   <h1>LLM Evaluator Stack Selector</h1>
   <p class="sub">5 questions. Get the exact eval stack for your team, scale, and regulatory context — with tool coverage breakdown and cost estimates.</p>
 </header>
 <p class="intro">Picking the wrong eval stack is expensive. Teams either over-engineer with enterprise platforms before they need them, or under-invest and lose visibility the moment they ship to production. This selector cuts through the noise.</p>
 <div class="stats">
   <div class="stat"><div class="n">5</div><div class="l">questions</div></div>
-  <div class="stat"><div class="n">5</div><div class="l">tools compared</div></div>
+  <div class="stat"><div class="n">6</div><div class="l">tools compared</div></div>
   <div class="stat"><div class="n">6</div><div class="l">eval layers mapped</div></div>
 </div>
 <div class="prog"><div class="prog-bar"><div class="prog-fill" id="progFill"></div></div><div class="prog-txt" id="progTxt">Question 1 of 5</div></div>
@@ -108,8 +120,11 @@ footer .b{font-family:'JetBrains Mono',monospace;color:var(--teal);letter-spacin
     <button class="share-btn" onclick="copyStack(this)">📋 Copy my stack</button>
     <button class="share-btn" onclick="restart()">↩ Retake</button>
   </div>
+  <div class="cta">
+    <p>Evaluating AI maturity org-wide, not just picking a tool? See Rynaut's <a href="https://rynaut.gumroad.com/l/gcc-ai-assessment" target="_blank">GCC AI Architecture Assessment</a> ($99–499) for the board-level version of this question.</p>
+  </div>
 </div>
-<footer><div class="b">RYNAUT · ARCHITECTING AUTOMATION</div><div>© 2025 Rynaut · Pricing verified as of 2025 — confirm at each tool's website before purchasing.</div></footer>
+<footer><div class="b">RYNAUT · ARCHITECTING AUTOMATION</div><div>© 2026 Rynaut · Tool landscape verified 25 July 2026. Vendor pricing changes frequently — always confirm at each tool's website before purchasing.<br>2026 ownership changes: Promptfoo acquired by OpenAI (Mar 2026) · Langfuse acquired by ClickHouse (Jan 2026). Both remain open source.</div></footer>
 </div>
 <script>
 const Qs=[
@@ -117,11 +132,12 @@ const Qs=[
   {text:"What scale of LLM calls are you evaluating per day?",why:"Scale determines whether you need a cloud platform or a lightweight local setup.",opts:[{k:"A",l:"< 1,000 calls/day",s:"Early stage or low-traffic product",v:"low"},{k:"B",l:"1K–100K calls/day",s:"Production with moderate traffic",v:"mid"},{k:"C",l:"> 100K calls/day",s:"High-traffic production",v:"high"}]},
   {text:"Is your AI system in a regulated industry?",why:"Regulated industries need audit trails, data residency controls, and compliance-ready exports.",opts:[{k:"A",l:"No — general tech / SaaS",s:"No regulatory requirements",v:"unregulated"},{k:"B",l:"Partially — internal tooling",s:"Some compliance, not customer-facing regulated",v:"partial"},{k:"C",l:"Yes — pharma / finance / healthcare / legal",s:"Full audit trail, HIPAA, GAMP5, or equivalent",v:"regulated"}]},
   {text:"What's your monthly budget for eval tooling?",why:"Budget determines the tier. All major tools have free tiers — compliance features require paid plans.",opts:[{k:"A",l:"$0 — free tier only",s:"No budget yet, validate first",v:"free"},{k:"B",l:"$50–300/month",s:"Willing to pay for good DX",v:"low_paid"},{k:"C",l:"$300+/month",s:"Eval is core infrastructure",v:"paid"}]},
-  {text:"What's your primary evaluation need right now?",why:"Different tools excel at different layers. Picking the right primary tool prevents over-engineering.",opts:[{k:"A",l:"Tracing & observability",s:"I need visibility inside my LLM calls",v:"tracing"},{k:"B",l:"Automated eval / CI testing",s:"I need evals in CI to catch regressions",v:"testing"},{k:"C",l:"RAG / retrieval quality",s:"I need to measure retrieval relevance and faithfulness",v:"rag"},{k:"D",l:"Production monitoring",s:"I need live alerting on quality degradation",v:"monitoring"}]},
+  {text:"What's your primary evaluation need right now?",why:"Different tools excel at different layers. Picking the right primary tool prevents over-engineering.",opts:[{k:"A",l:"Tracing & observability",s:"I need visibility inside my LLM calls",v:"tracing"},{k:"B",l:"Automated eval / CI testing",s:"I need evals in CI to catch regressions",v:"testing"},{k:"C",l:"RAG / retrieval quality",s:"I need to measure retrieval relevance and faithfulness",v:"rag"},{k:"D",l:"Production monitoring",s:"I need live alerting on quality degradation",v:"monitoring"},{k:"E",l:"Security & red-teaming",s:"I need to probe for prompt injection, jailbreaks, and data leakage",v:"security"}]},
 ];
 
 const TOOLS={
-  langfuse:{name:"Langfuse",role:"PRIMARY · TRACING & DATASETS",desc:"Open-source LLM observability with tracing, prompt management, dataset management, and online evals. Self-hostable for full data control. Best all-rounder for most teams.",color:"#13796B",cov:{"Tracing":"yes","Prompt Mgmt":"yes","Datasets":"yes","Online Evals":"yes","RAG Eval":"partial","CI Testing":"partial"},free:"50K events/mo",paid:"$49/mo (Hobby)",sh:"Free forever"},
+  langfuse:{name:"Langfuse",role:"PRIMARY · TRACING & DATASETS",desc:"Open-source LLM observability with tracing, prompt management, dataset management, and online evals. Self-hostable for full data control. Best all-rounder for most teams. Acquired by ClickHouse in January 2026; remains open source and the leading self-host option.",color:"#13796B",cov:{"Tracing":"yes","Prompt Mgmt":"yes","Datasets":"yes","Online Evals":"yes","RAG Eval":"partial","CI Testing":"partial"},free:"50K events/mo",paid:"$49/mo (Hobby)",sh:"Free forever"},
+  promptfoo:{name:"Promptfoo",role:"RED-TEAM · ADVERSARIAL",desc:"CLI-first, YAML-configured testing built to break your LLM app before an attacker does. Native multi-model matrix comparison plus red-team plugins probing prompt injection, jailbreaks, and sensitive-data leakage. The category standard for pre-deployment security testing, especially in regulated workloads. Acquired by OpenAI in March 2026; remains open source.",color:"#C2453E",cov:{"Tracing":"no","Prompt Mgmt":"partial","Datasets":"partial","Online Evals":"no","RAG Eval":"partial","CI Testing":"yes"},free:"Open source",paid:"Enterprise (contact)",sh:"Free (OSS)"},
   deepeval:{name:"DeepEval",role:"CI TESTING · REGRESSION",desc:"Pytest-based LLM evaluation framework. Write eval test cases like unit tests, run in CI. Best-in-class for automated regression testing with LLM judges.",color:"#3A8B3F",cov:{"Tracing":"no","Prompt Mgmt":"no","Datasets":"partial","Online Evals":"no","RAG Eval":"yes","CI Testing":"yes"},free:"Open source",paid:"$49/mo (Cloud)",sh:"Free (OSS)"},
   arize:{name:"Arize Phoenix",role:"OBSERVABILITY · OPEN SOURCE",desc:"Open-source ML and LLM observability platform. Strong on embedding analysis, retrieval quality, and production drift detection.",color:"#7A4B8C",cov:{"Tracing":"yes","Prompt Mgmt":"partial","Datasets":"yes","Online Evals":"yes","RAG Eval":"yes","CI Testing":"partial"},free:"Open source",paid:"Arize Cloud (contact)",sh:"Free (OSS)"},
   braintrust:{name:"Braintrust",role:"ENTERPRISE · FULL PLATFORM",desc:"Full-stack eval platform with real-time scoring, dataset management, prompt playground, and CI integration. Best UX in the category. Preferred for larger teams with budget.",color:"#C2790F",cov:{"Tracing":"yes","Prompt Mgmt":"yes","Datasets":"yes","Online Evals":"yes","RAG Eval":"yes","CI Testing":"yes"},free:"Free tier (limited)",paid:"$200/mo+",sh:"Enterprise plan"},
@@ -163,11 +179,15 @@ function getStack(){
   let a,b,c;
   if(need==='testing')a='deepeval';
   else if(need==='rag')a='ragas';
+  else if(need==='security')a='promptfoo';
   else a='langfuse';
   if(a==='langfuse')b='deepeval';
   else if(a==='deepeval')b='langfuse';
+  else if(a==='promptfoo')b='deepeval';
   else b='langfuse';
-  if(regulated==='regulated'||(team==='large'&&budget==='paid'))c='braintrust';
+  if(need==='security')c='langfuse';
+  else if(regulated==='regulated')c='promptfoo';
+  else if(team==='large'&&budget==='paid')c='braintrust';
   else if(need==='rag'||need==='monitoring')c='arize';
   else c=null;
   return[a,b,c].filter(Boolean);
